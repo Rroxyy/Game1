@@ -70,10 +70,59 @@ public class HexCellQuadtree
             child.GetAllChildren(list);
         }
     }
-    
 
+
+    #region Collider AABB methods
+
+    public AABB GetCombinedCollider(AABB_Int queryAABB)
+    {
+        if (aabbCollider_Dirty)
+        {
+            UpdateAABB_Collider();
+        }
+        
+        // 当前节点的 aabb_id 与 queryAABB 完全不重合
+        if (!aabb_id.Overlaps(queryAABB))
+        {
+            return null; // 默认无效 AABB
+        }
+
+        // 如果是叶子节点，直接返回当前节点的 aabb_collider
+        if (isLeaf)
+        {
+            return cell?.GetAABB_Collider();
+        }
+
+        // 如果是非叶子节点，递归子节点
+        AABB combined = null;
+        bool hasValid = false;
+
+        foreach (var child in children)
+        {
+            var childAABB = child.GetCombinedCollider(queryAABB);
+            if (childAABB != null) // 有有效 collider
+            {
+                if (!hasValid)
+                {
+                    combined = childAABB;
+                    hasValid = true;
+                }
+                else
+                {
+                    combined.Encapsulate(childAABB);
+                }
+            }
+        }
+
+        return hasValid ? combined : null;
+    }
     public HexCell GetMinDistanceHexCellByRay(Ray ray)
     {
+        if (aabbCollider_Dirty)
+        {
+            UpdateAABB_Collider();
+        }
+        
         if (!aabb_collider.Contains(ray))
         {
             return null;
@@ -126,7 +175,61 @@ public class HexCellQuadtree
         return ret;
     }
 
+    
+    public void AABBCollider_Dirty()
+    {
+        if (aabbCollider_Dirty) return;
+        aabbCollider_Dirty = true;
+        father?.AABBCollider_Dirty();
+    }
 
+    public void UpdateAABB_Collider()
+    {
+        if (!aabbCollider_Dirty) return;
+        
+        if (children != null)
+        {
+            foreach (var it in children)
+            {
+                it.UpdateAABB_Collider();
+            }
+        }
+        
+        
+        if (cell != null)
+        {
+            aabb_collider=cell.GetAABB_Collider();
+        }
+        else
+        {
+            aabb_collider.Reset();
+        }
+        
+        if (children != null)
+        {
+            foreach (var it in children)
+            {
+                aabb_collider.Encapsulate(it.aabb_collider);
+            }
+        }
+
+        
+        aabbCollider_Dirty = false;
+    }
+    
+    #endregion
+    
+
+
+   
+
+    
+
+
+
+   
+
+    #region Basically not used
     private void Subdivide()
     {
         isLeaf = false;
@@ -160,7 +263,7 @@ public class HexCellQuadtree
         treeHeight = 1;
         father?.UpdateTreeHeight(2);
     }
-
+    
     private void UpdateTreeHeight(uint _height)
     {
         if (_height > treeHeight)
@@ -170,46 +273,6 @@ public class HexCellQuadtree
         }
     }
 
-    public void AABBCollider_Dirty()
-    {
-        aabbCollider_Dirty = true;
-        father?.AABBCollider_Dirty();
-    }
-
-    public void UpdateAABB_Collider()
-    {
-        if (children != null)
-        {
-            foreach (var it in children)
-            {
-                it.UpdateAABB_Collider();
-            }
-        }
-        
-        
-        if (cell != null)
-        {
-            aabb_collider=cell.GetAABB_Collider();
-        }
-        else
-        {
-            aabb_collider.Reset();
-        }
-        
-        if (children != null)
-        {
-            foreach (var it in children)
-            {
-                aabb_collider.Encapsulate(it.aabb_collider);
-            }
-        }
-
-        
-        aabbCollider_Dirty = false;
-    }
-
-    public void PrintBounds()
-    {
-        Debug.Log($"Bounds: {aabb_id.min} to {aabb_id.max}");
-    }
+    #endregion
+   
 }

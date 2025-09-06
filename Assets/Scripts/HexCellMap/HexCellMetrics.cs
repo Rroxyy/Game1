@@ -17,7 +17,7 @@ public enum HexCellDirection
     UR,
 }
 
-public class HexCellMetrics
+public static class HexCellMetrics
 {
     public static readonly float outerRadius = 0.5f;
     public static readonly float innerRadius = Mathf.Sqrt(3f) * outerRadius / 2f;

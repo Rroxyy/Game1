@@ -11,13 +11,13 @@ public class HexCellMapManager : MonoBehaviour
     [SerializeField] private int widthSize;
 
     
-    public Dictionary<(int, int), HexCell> hexCellsMap{get; private set;}
+    public Dictionary<HexCellCoords, HexCell> hexCellsMap{get; private set;}
     public HexCellQuadtree root;
 
     [Header("Chunks")]
-    public  int chunkCellHeight = 8;
-    public  int chunkCellWidth = 8;
-    public Dictionary<(int,int),HexCellChunk> chunksMap{get; private set;}
+    public  int chunkSize_Height = 8;
+     public  int chunkSize_Width = 8;
+    public Dictionary<HexCellCoords,HexCellChunk> chunksMap{get; private set;}
 
 
     [SerializeField] private GameObject chunkPrefab;
@@ -57,8 +57,8 @@ public class HexCellMapManager : MonoBehaviour
 
     public void GenerateHexMap()
     {
-        hexCellsMap = new Dictionary<(int, int), HexCell>();
-        chunksMap = new Dictionary<(int, int), HexCellChunk>();
+        hexCellsMap = new Dictionary<HexCellCoords, HexCell>();
+        chunksMap = new Dictionary<HexCellCoords, HexCellChunk>();
 
         AABB_Int aabb = new AABB_Int(new Vector3Int(0, 0, 0), new Vector3Int(widthSize - 1, 0, heightSize - 1));
         root = new HexCellQuadtree(aabb, null);
@@ -86,7 +86,7 @@ public class HexCellMapManager : MonoBehaviour
                 Vector3 position = new Vector3(posX, 0f, posZ);
                 HexCell hexCell = new HexCell(new HexCellCoords(x, z), position,HexCellColorManager.instance.GetColor(HexCellColorEnum.White));
                 
-                hexCellsMap[(x, z)] = hexCell;
+                hexCellsMap[new HexCellCoords(x,z)] = hexCell;
                 InsertChunkMap(hexCell);
                 
                 root.Insert(hexCell);
@@ -96,7 +96,7 @@ public class HexCellMapManager : MonoBehaviour
 
     private void InsertChunkMap(HexCell hexCell)
     {
-        var key=(hexCell.HexCellCoords.x/chunkCellWidth, hexCell.HexCellCoords.z/chunkCellHeight);
+        var key = hexCell.HexCellCoords / (chunkSize_Width, chunkSize_Height);
         if (chunksMap.ContainsKey(key))
         {
             chunksMap[key].AddHexCell(hexCell);
@@ -106,6 +106,9 @@ public class HexCellMapManager : MonoBehaviour
             var it=Instantiate(chunkPrefab, Vector3.zero,Quaternion.identity,transform);
             var chunk = it.GetComponent<HexCellChunk>();
             chunksMap[key] = chunk;
+            Vector3Int min= new Vector3Int(key.x*chunkSize_Width,0,key.z*chunkSize_Height);
+            Vector3Int max = new Vector3Int((key.x+1)*chunkSize_Width-1,0,(key.z+1)*chunkSize_Height-1);
+            chunk.SetUp(new AABB_Int(min,max));
             chunk.AddHexCell(hexCell);
         }
     }
@@ -114,9 +117,7 @@ public class HexCellMapManager : MonoBehaviour
 
     public HexCellChunk GetChunk(HexCell hexCell)
     {
-        (int, int) pos = hexCell.HexCellCoords;
-        
-        return chunksMap[(pos.Item1/chunkCellHeight,pos.Item2/chunkCellWidth)];
+        return chunksMap[hexCell.HexCellCoords/(chunkSize_Width, chunkSize_Height)];
     }
 
 
@@ -141,7 +142,7 @@ public class HexCellMapManager : MonoBehaviour
                 // 转回 offset 坐标
                 HexCellCoords neighborCellCoords = HexCellMetrics.CubeToOffset(nx, ny, nz);
 
-                if (hexCellsMap.TryGetValue((neighborCellCoords.x, neighborCellCoords.z), out HexCell neighbor))
+                if (hexCellsMap.TryGetValue(neighborCellCoords, out HexCell neighbor))
                 {
                     if (neighbor != center) // 排除自己
                         neighbors.Add(neighbor);
@@ -150,7 +151,7 @@ public class HexCellMapManager : MonoBehaviour
         }
     }
     
-    //支取周围一格
+    //只取周围一格
     public void GetCellNeighbors(HexCell center, ref List<HexCell> neighbors,ref List<HexCellDirection> directions) 
     {
         foreach (var dir in HexCellMetrics.AllDirections)

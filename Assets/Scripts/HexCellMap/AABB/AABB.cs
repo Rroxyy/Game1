@@ -8,7 +8,7 @@ public class AABB
     public Vector3 min;
     public Vector3 max;
     public Vector3 center => (this.min + this.max) / 2f;
-    public float size => (this.max - this.min).magnitude;
+    public Vector3 size => (this.max - this.min);
 
     public AABB()
     {
@@ -107,6 +107,26 @@ public class AABB
                (point.y >= a.min.y && point.y <= a.max.y) &&
                (point.z >= a.min.z && point.z <= a.max.z);
     }
+    
+    // 判断在每个轴向上是否有间隙，如果有间隙则不重叠
+    public bool Overlaps(AABB other)
+    {
+        if (max.x < other.min.x || min.x > other.max.x) return false;
+        if (max.y < other.min.y || min.y > other.max.y) return false;
+        if (max.z < other.min.z || min.z > other.max.z) return false;
+
+        return true;
+    }
+
+    // 静态版本
+    public static bool Overlaps(AABB a, AABB b)
+    {
+        if (a.max.x < b.min.x || a.min.x > b.max.x) return false;
+        if (a.max.y < b.min.y || a.min.y > b.max.y) return false;
+        if (a.max.z < b.min.z || a.min.z > b.max.z) return false;
+        return true;
+    }
+
 
     public override string ToString() => $"Min: {min}, Max: {max}";
 }
@@ -164,6 +184,26 @@ public class AABB_Int
         return (point.x >= a.min.x && point.x <= a.max.x) &&
                (point.y >= a.min.y && point.y <= a.max.y) &&
                (point.z >= a.min.z && point.z <= a.max.z);
+    }
+    
+    // 判断在每个轴向上是否有间隙，如果有间隙则不重叠
+    public bool Overlaps(AABB_Int other)
+    {
+        if (max.x < other.min.x || min.x > other.max.x) return false;
+        if (max.y < other.min.y || min.y > other.max.y) return false;
+        if (max.z < other.min.z || min.z > other.max.z) return false;
+
+        // 没有间隙则重叠
+        return true;
+    }
+
+    // 静态版本
+    public static bool Overlaps(AABB_Int a, AABB_Int b)
+    {
+        if (a.max.x < b.min.x || a.min.x > b.max.x) return false;
+        if (a.max.y < b.min.y || a.min.y > b.max.y) return false;
+        if (a.max.z < b.min.z || a.min.z > b.max.z) return false;
+        return true;
     }
 
     public override string ToString() => $"Min: {min}, Max: {max}";
