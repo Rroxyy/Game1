@@ -83,9 +83,10 @@ public class HexCell
     public Vector3 positionWS;
     public Vector3 normal;
     public Color cellColor;
-
+    
+    private HexCellChunk chunk;
     private HexCellQuadtree hexCellQuadtree;
-    public int hexCellChunkMesh_Index { get;private set; }
+    public int cellMesh_Index { get;private set; }
 
     public HexCell(HexCellCoords hexCellCoords, Vector3 _positionWS, Color color)
     {
@@ -93,7 +94,12 @@ public class HexCell
         positionWS = _positionWS;
         cellColor = color;
         normal = Vector3.up;
-        hexCellChunkMesh_Index = -1;
+        cellMesh_Index = -1;
+    }
+
+    public void SetChunk(HexCellChunk _chunk)
+    {
+        chunk = _chunk;
     }
 
     public void SetHexMapQuadtree(HexCellQuadtree _quadtree)
@@ -101,12 +107,12 @@ public class HexCell
         hexCellQuadtree = _quadtree;
     }
 
-    public void SetHexCellMeshIndex(int _chunkIndex)
+    public void SetCellMeshIndex(int _chunkIndex)
     {
-        hexCellChunkMesh_Index = _chunkIndex;
+        cellMesh_Index = _chunkIndex;
     }
 
-   
+    
     
     #region Mesh Info
     
@@ -117,11 +123,16 @@ public class HexCell
         point2 = p2+positionWS;
     }
 
+    public void SetChunkDirty(bool dirtyCell = true)
+    {
+        chunk.SetCellDirty(this,dirtyCell);
+    }
+
     public void SetColor(Color _color)
     {
         if (cellColor == _color) return;
         cellColor = _color;
-        HexCellMapManager.instance.GetChunk(this).SetDirty(this);
+        SetChunkDirty(true);
     }
 
     public void SetHeight(float _height)
@@ -129,10 +140,11 @@ public class HexCell
         float temp = _height * HexCellMetrics.heightFactor;
         if (Mathf.Abs(positionWS.y - temp) < 1e-4) return;
         positionWS.y = temp;
-        HexCellMapManager.instance.GetChunk(this).SetDirty(this);
+        SetChunkDirty(true);
         if (hexCellQuadtree == null)
         {
             Debug.Log(HexCellCoords + " hex cell quadtree is null");
+            return;
         }
 
         hexCellQuadtree.AABBCollider_Dirty();

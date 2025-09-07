@@ -25,7 +25,7 @@ public static class HexCellMeshOperate
         AddCellConnectionMesh(cell, vertexBufferList);
     }
     
-    public static void AddCellConnectionMesh(HexCell cell, List<CellVertexData> vertexBufferList)
+    private static void AddCellConnectionMesh(HexCell cell, List<CellVertexData> vertexBufferList)
     {
         foreach (var dir in HexCellMetrics.HalfDirections)
         {
@@ -40,7 +40,7 @@ public static class HexCellMeshOperate
         }
     }
     
-    public static void AddCellMesh(HexCell cell, List<CellVertexData> vertexBufferList)
+    private  static void AddCellMesh(HexCell cell, List<CellVertexData> vertexBufferList)
     {
         Vector3 positionWS = cell.positionWS;
         for (int i = 0; i < 6; i++)

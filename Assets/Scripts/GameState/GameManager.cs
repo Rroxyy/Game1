@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     
     public BootGameState bootGameState{ get;private set; }
     public LoadingGameState loadingGameState{ get;private set; }
+    public GameplayGameState gameplayGameState { get;private set; }
     
     
     public static GameManager instance;
@@ -22,6 +23,7 @@ public class GameManager : MonoBehaviour
 
         bootGameState = new BootGameState(gameStateMachine);
         loadingGameState = new LoadingGameState(gameStateMachine);
+        gameplayGameState = new GameplayGameState(gameStateMachine);
         
         gameStateMachine.Initialize(bootGameState);
     }

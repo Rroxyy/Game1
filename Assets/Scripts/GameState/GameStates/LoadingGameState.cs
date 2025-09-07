@@ -11,16 +11,21 @@ public class LoadingGameState : GameState
     {
         base.Enter();
 
-        HexCellMapManager.instance.GenerateHexMap();
+        
+        
+        
     }
-
-    public override void Exit()
-    {
-        base.Exit();
-    }
-
     public override void Update()
     {
         base.Update();
+        gameStateMachine.ChangeState(GameManager.instance.gameplayGameState);
+
     }
+    public override void Exit()
+    {
+        base.Exit();
+        
+    }
+
+  
 }

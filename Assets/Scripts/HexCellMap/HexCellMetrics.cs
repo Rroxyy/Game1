@@ -40,6 +40,13 @@ public static class HexCellMetrics
         HexCellDirection.UR,
         HexCellDirection.R,
     };
+    
+    public static readonly HexCellDirection[] HalfInverseDirections =
+    {
+        HexCellDirection.RD,
+        HexCellDirection.DL,
+        HexCellDirection.L,
+    };
 
 
     public static readonly float GapX = 0.2f;

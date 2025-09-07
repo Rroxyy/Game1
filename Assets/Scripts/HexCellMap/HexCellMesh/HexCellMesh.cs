@@ -16,7 +16,12 @@ public class HexCellMesh
     private List<CellVertexData> vertexBufferList;
     private List<Int16> indicesList;
     
-    private static readonly MeshUpdateFlags HexCellMeshUpdateFlag=MeshUpdateFlags.DontRecalculateBounds |MeshUpdateFlags.DontValidateIndices;
+    private static readonly MeshUpdateFlags 
+        HexCellMeshUpdateFlag=MeshUpdateFlags.DontRecalculateBounds 
+                              |MeshUpdateFlags.DontValidateIndices
+                              // |MeshUpdateFlags.DontNotifyMeshUsers
+                              ;
+    
     
     public HexCellMesh(HexCellChunk _chunk, Mesh _mesh)
     {
@@ -36,8 +41,10 @@ public class HexCellMesh
     
         foreach (HexCell cell in cells)
         {
-            cell.SetHexCellMeshIndex(vertexBufferList.Count);
-            HexCellMeshOperate.AddCell(cell, vertexBufferList);
+            cell.SetCellMeshIndex(vertexBufferList.Count);
+            HexCellMeshOperate.AddCell(cell,vertexBufferList);
+            
+           
         }
     
         mesh.Clear();
@@ -59,13 +66,33 @@ public class HexCellMesh
 
         mesh.SetSubMesh(0, new SubMeshDescriptor(0, indicesList.Count, MeshTopology.Triangles), HexCellMeshUpdateFlag);
 
-        mesh.RecalculateBounds();
+        RebuildBounds();
         
         vertexBufferList = new List<CellVertexData>();
         indicesList = new List<Int16>();
     }
 
+    public void RebuildSingleCellMesh(HexCell cell)
+    {
+        HexCellMeshOperate.AddCell(cell, vertexBufferList);
+        
+        mesh.SetVertexBufferData(vertexBufferList, 
+            0, 
+            cell.cellMesh_Index,
+            vertexBufferList.Count,
+            0,
+            HexCellMeshUpdateFlag);
+
+        vertexBufferList.Clear();
+    }
+
     
+
+    public void RebuildBounds()
+    {
+        AABB aabbCollider = HexCellMapManager.instance.root.GetCombinedCollider(chunk.aabb_id);
+        mesh.bounds = new Bounds(aabbCollider.center, aabbCollider.size);
+    }
     
     
 }

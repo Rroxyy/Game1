@@ -11,15 +11,17 @@ public class HexCellChunk : MonoBehaviour
     [Header("Base")] 
     [SerializeField] private MeshFilter meshFilter;
     [SerializeField] private List<HexCell> cells = new List<HexCell>();
-    private AABB_Int aabb_id;
+    public AABB_Int aabb_id{get; private set;}
 
 
-    private List<HexCell> dirtyCells = new List<HexCell>();
-    private bool dirty = true;
+    
     
     
     [Header("Mesh")]
     private HexCellMesh hexCellMesh;
+    
+    private HashSet<HexCell> dirtyCells = new HashSet<HexCell>();
+    private bool dirty = true;
 
 
     [Header("Show Coords")] 
@@ -47,7 +49,7 @@ public class HexCellChunk : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void OnUpdate()
     {
         if (testShowCoordsUI)
         {
@@ -58,11 +60,9 @@ public class HexCellChunk : MonoBehaviour
             ClearCoordsUI();
         }
 
-        if (dirty)
-        {
-            RebuildChunkMesh();
-        }
+        
     }
+    
 
     public void SetUp(AABB_Int _aadd_id)
     {
@@ -107,27 +107,59 @@ public class HexCellChunk : MonoBehaviour
 
     #region Change Mesh Data
 
-    public void SetDirty(HexCell cell)
+    public void SetCellDirty(HexCell cell,bool dirtyCell=true)
     {
-        dirty = true;
         dirtyCells.Add(cell);
+
+        if (dirtyCell)
+        {
+            foreach (var dir in HexCellMetrics.HalfInverseDirections)
+            {
+                HexCellMapManager.instance.GetCellNeighbors(cell,dir)?.SetChunkDirty(false);
+            }
+        }
+        
+
+        if (!dirty)
+        {
+            HexCellMapManager.instance.SetDirtyChunk(this);
+        }
+        dirty = true;
     }
+
+   
 
     public void AddHexCell(HexCell _cell)
     {
-        dirty = true;
         cells.Add(_cell);
     }
 
-    public void RebuildChunkMesh()
+    public void InitializeChunkMesh()
     {
         hexCellMesh.RebuildMesh(cells);
-        RefreshCoordsUI();
 
         dirty = false;
         dirtyCells.Clear();
         
     }
+
+    public void RefreshHexCellMesh()
+    {
+        if (!dirty) return;
+        foreach (var cell in dirtyCells)
+        {
+            hexCellMesh.RebuildSingleCellMesh(cell);
+        }
+        
+        RefreshCoordsUI();
+
+        dirty = false;
+        dirtyCells.Clear();
+        
+        hexCellMesh.RebuildBounds();
+    }
+
+    
 
     
     #endregion

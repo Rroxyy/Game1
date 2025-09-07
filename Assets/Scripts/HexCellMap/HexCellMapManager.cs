@@ -21,6 +21,8 @@ public class HexCellMapManager : MonoBehaviour
 
 
     [SerializeField] private GameObject chunkPrefab;
+    
+    private HashSet<HexCellChunk> dirtyChunks=new HashSet<HexCellChunk>();
 
     [Header("Test")] 
     [SerializeField] private bool test = false;
@@ -43,10 +45,22 @@ public class HexCellMapManager : MonoBehaviour
 
     void Update()
     {
-        if (test)
+        
+    }
+
+    public void UpdateChunks()
+    {
+        foreach (var chunk in chunksMap.Values)
         {
-            
+            chunk.OnUpdate();
         }
+
+        foreach (var chunk in dirtyChunks)
+        {
+            chunk.RefreshHexCellMesh();
+        }
+        
+        
     }
 
     private void OnDestroy()
@@ -54,8 +68,14 @@ public class HexCellMapManager : MonoBehaviour
         root = null;
     }
 
+    public void SetDirtyChunk(HexCellChunk chunk)
+    {
+        dirtyChunks.Add(chunk);
+    }
 
-    public void GenerateHexMap()
+    #region 初始化
+
+     public void GenerateHexMap()
     {
         hexCellsMap = new Dictionary<HexCellCoords, HexCell>();
         chunksMap = new Dictionary<HexCellCoords, HexCellChunk>();
@@ -92,16 +112,18 @@ public class HexCellMapManager : MonoBehaviour
                 root.Insert(hexCell);
             }
         }
+
+        foreach (var chunk in chunksMap.Values)
+        {
+            chunk.InitializeChunkMesh();
+        }
+       
     }
 
     private void InsertChunkMap(HexCell hexCell)
     {
         var key = hexCell.HexCellCoords / (chunkSize_Width, chunkSize_Height);
-        if (chunksMap.ContainsKey(key))
-        {
-            chunksMap[key].AddHexCell(hexCell);
-        }
-        else
+        if (!chunksMap.ContainsKey(key))
         {
             var it=Instantiate(chunkPrefab, Vector3.zero,Quaternion.identity,transform);
             var chunk = it.GetComponent<HexCellChunk>();
@@ -109,9 +131,14 @@ public class HexCellMapManager : MonoBehaviour
             Vector3Int min= new Vector3Int(key.x*chunkSize_Width,0,key.z*chunkSize_Height);
             Vector3Int max = new Vector3Int((key.x+1)*chunkSize_Width-1,0,(key.z+1)*chunkSize_Height-1);
             chunk.SetUp(new AABB_Int(min,max));
-            chunk.AddHexCell(hexCell);
         }
+       
+        chunksMap[key].AddHexCell(hexCell);
+        hexCell.SetChunk(chunksMap[key]);
     }
+
+    #endregion
+   
 
    
 

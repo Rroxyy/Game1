@@ -56,7 +56,7 @@ public class InputManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void OnUpdate()
     {
         if (mousePos != Input.mousePosition)
         {
