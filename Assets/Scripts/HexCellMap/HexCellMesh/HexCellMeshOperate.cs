@@ -22,23 +22,10 @@ public static class HexCellMeshOperate
     public static void AddCell(HexCell cell, List<CellVertexData> vertexBufferList)
     {
         AddCellMesh(cell, vertexBufferList);
-        AddCellConnectionMesh(cell, vertexBufferList);
+        AddGapConnectionMesh(cell, vertexBufferList);
     }
     
-    private static void AddCellConnectionMesh(HexCell cell, List<CellVertexData> vertexBufferList)
-    {
-        foreach (var dir in HexCellMetrics.HalfDirections)
-        {
-            var neighbor = HexCellMapManager.instance.GetCellNeighbors(cell, dir);
-            if (neighbor == null) continue;
-
-
-            cell.GetVertexByDirection(dir, out var a1, out var a2);
-            neighbor.GetVertexByDirection(HexCellMetrics.GetInverseDirection(dir), out var b1, out var b2);
-
-            AddQuad(a1, a2, b1, b2, cell.cellColor, neighbor.cellColor, vertexBufferList);
-        }
-    }
+  
     
     private  static void AddCellMesh(HexCell cell, List<CellVertexData> vertexBufferList)
     {
@@ -54,6 +41,28 @@ public static class HexCellMeshOperate
             );
         }
     }
+
+    private static void AddGapConnectionMesh(HexCell cell, List<CellVertexData> vertexBufferList)
+    {
+        foreach (var dir in HexCellMetrics.HalfDirections)
+        {
+            var neighbor = HexCellMapManager.instance.GetCellNeighbors(cell, dir);
+            if (neighbor == null) continue;
+
+
+            cell.GetVertexByDirection(dir, out var a1, out var a2);
+            neighbor.GetVertexByDirection(HexCellMetrics.GetInverseDirection(dir), out var b1, out var b2);
+
+            AddQuad( a2,a1, b2,b1,  cell.cellColor, neighbor.cellColor, vertexBufferList);
+
+            var nextDir = HexCellMetrics.NextDirection(dir);
+            var nextNeighbor = HexCellMapManager.instance.GetCellNeighbors(cell,nextDir);
+            if(nextNeighbor == null) continue;
+            nextNeighbor.GetVertexByDirection(HexCellMetrics.GetInverseDirection(nextDir), out var next1, out var next2);
+            AddTriangle(a2,b1,next2,cell.cellColor,neighbor.cellColor,nextNeighbor.cellColor,vertexBufferList);
+            
+        }
+    }
     
     
     
@@ -65,7 +74,9 @@ public static class HexCellMeshOperate
     
     
     
-    public static void  AddQuad(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2, Color32 c1, Color32 c2, List<CellVertexData> vertexBufferList)
+    
+    
+    public static void  AddQuad(Vector3 a2,Vector3 a1, Vector3 b2, Vector3 b1,  Color32 c1, Color32 c2, List<CellVertexData> vertexBufferList)
     {
         AddTriangle(a1, b2, b1, c1, c2, c2, vertexBufferList);
         AddTriangle(b1, a2, a1, c2, c1, c1, vertexBufferList);

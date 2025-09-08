@@ -247,10 +247,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 919eca14c19da86499ffae7f0a34da24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heightSize: 60
-  widthSize: 60
-  chunkCellHeight: 8
-  chunkCellWidth: 8
+  heightSize: 30
+  widthSize: 30
+  chunkSize_Height: 8
+  chunkSize_Width: 8
   chunkPrefab: {fileID: 1938141394758889182, guid: 6c79d15760fa63a4bad5fa71c9901348, type: 3}
   test: 0
 --- !u!114 &534488094

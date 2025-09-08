@@ -26,14 +26,16 @@ public class HexCellChunk : MonoBehaviour
 
     [Header("Show Coords")] 
     [SerializeField] private bool testShowCoordsUI = false;
-    
-    
-    [Header("Test")]
-    [SerializeField]private bool gizmosTest = false;
-
     private bool showCoords = false;
     private List<HexCellCoordUI> coordsUI = new List<HexCellCoordUI>();
     
+    [Header("AABB Collider Show")]
+    [SerializeField]private bool AABB_ShowTest = false;
+    
+    
+    [Header("Test")]
+    [SerializeField] private bool testShowTest = false;
+    [SerializeField] private float testLen = 0.2f;
     
     private void Awake()
     {
@@ -168,14 +170,34 @@ public class HexCellChunk : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(!gizmosTest) return;
+
+        if (AABB_ShowTest)
+        {
+            AABB aabbCollider = HexCellMapManager.instance.root.GetCombinedCollider(aabb_id);
+            Vector3 center = aabbCollider.center;
+            Vector3 size= aabbCollider.size;
         
-        AABB aabbCollider = HexCellMapManager.instance.root.GetCombinedCollider(aabb_id);
-        Vector3 center = aabbCollider.center;
-        Vector3 size= aabbCollider.size;
-        
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(center, size);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(center, size);
+        }
+
+        if (testShowTest)
+        {
+            Gizmos.color = Color.green;
+
+            var normals = meshFilter.mesh.normals;
+            var vertices = meshFilter.mesh.vertices;
+            
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                // 顶点位置要转到世界坐标系
+                Vector3 worldPos = meshFilter.transform.TransformPoint(vertices[i]);
+                Vector3 worldNormal = meshFilter.transform.TransformDirection(normals[i]);
+
+                // 画一条小线段表示法线
+                Gizmos.DrawLine(worldPos, worldPos + worldNormal * 0.2f);
+            }
+        }
     }
 
     #endregion

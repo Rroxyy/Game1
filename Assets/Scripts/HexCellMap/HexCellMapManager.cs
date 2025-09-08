@@ -16,12 +16,9 @@ public class HexCellMapManager : MonoBehaviour
 
     [Header("Chunks")]
     public  int chunkSize_Height = 8;
-     public  int chunkSize_Width = 8;
+    public  int chunkSize_Width = 8;
     public Dictionary<HexCellCoords,HexCellChunk> chunksMap{get; private set;}
-
-
     [SerializeField] private GameObject chunkPrefab;
-    
     private HashSet<HexCellChunk> dirtyChunks=new HashSet<HexCellChunk>();
 
     [Header("Test")] 

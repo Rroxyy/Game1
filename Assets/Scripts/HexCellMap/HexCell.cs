@@ -115,6 +115,12 @@ public class HexCell
     
     
     #region Mesh Info
+    /// <summary>
+    /// 顺时针返回points
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <param name="point1"></param>
+    /// <param name="point2"></param>
     
     public void GetVertexByDirection(HexCellDirection direction, out Vector3 point1,out Vector3 point2)
     {

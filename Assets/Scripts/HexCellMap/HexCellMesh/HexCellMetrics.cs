@@ -15,6 +15,7 @@ public enum HexCellDirection
     L,
     LU,
     UR,
+    
 }
 
 public static class HexCellMetrics
@@ -182,6 +183,11 @@ public static class HexCellMetrics
 
         var (dx, dz) = offsets[(int)direction];
         return new HexCellCoords(coords.x + dx, coords.z + dz);
+    }
+    
+    public static HexCellDirection NextDirection(HexCellDirection dir)
+    {
+        return (HexCellDirection)(((int)dir + 1) % 6);
     }
 
     
