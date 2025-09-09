@@ -13,7 +13,7 @@ public class HexCellMesh
     private HexCellChunk chunk;
     private Mesh mesh;
 
-    private List<CellVertexData> vertexBufferList;
+    private List<HexCellVertexData> vertexBufferList;
     private List<Int16> indicesList;
     
     private static readonly MeshUpdateFlags 
@@ -21,14 +21,14 @@ public class HexCellMesh
                               |MeshUpdateFlags.DontValidateIndices
                               // |MeshUpdateFlags.DontNotifyMeshUsers
                               ;
-    
-    
+
     public HexCellMesh(HexCellChunk _chunk, Mesh _mesh)
     {
         chunk = _chunk;
         mesh = _mesh;
-        vertexBufferList = new List<CellVertexData>();
+        vertexBufferList = new List<HexCellVertexData>();
         indicesList = new List<Int16>();
+
     }
     
     
@@ -37,14 +37,11 @@ public class HexCellMesh
 
     public void RebuildMesh(List<HexCell> cells)
     {
-        
     
         foreach (HexCell cell in cells)
         {
             cell.SetCellMeshIndex(vertexBufferList.Count);
-            HexCellMeshOperate.AddCell(cell,vertexBufferList);
-            
-           
+            TerrainMeshOperate.AddCell(cell,vertexBufferList,chunk.GetLOD());
         }
     
         mesh.Clear();
@@ -68,13 +65,13 @@ public class HexCellMesh
 
         RebuildBounds();
         
-        vertexBufferList = new List<CellVertexData>();
+        vertexBufferList = new List<HexCellVertexData>();
         indicesList = new List<Int16>();
     }
 
     public void RebuildSingleCellMesh(HexCell cell)
     {
-        HexCellMeshOperate.AddCell(cell, vertexBufferList);
+        TerrainMeshOperate.AddCell(cell, vertexBufferList,chunk.GetLOD());
         
         mesh.SetVertexBufferData(vertexBufferList, 
             0, 

@@ -24,6 +24,8 @@ public class HexCellMapManager : MonoBehaviour
     [Header("Test")] 
     [SerializeField] private bool test = false;
 
+    [SerializeField] private LOD_Level lod=LOD_Level.LOD0;
+
 
     public static HexCellMapManager instance;
 
@@ -69,6 +71,11 @@ public class HexCellMapManager : MonoBehaviour
     {
         dirtyChunks.Add(chunk);
     }
+    
+    public HexCellChunk GetChunk(HexCell hexCell)
+    {
+        return chunksMap[hexCell.hexCellCoords/(chunkSize_Width, chunkSize_Height)];
+    }
 
     #region 初始化
 
@@ -101,14 +108,18 @@ public class HexCellMapManager : MonoBehaviour
                 posZ += HexCellMetrics.GapZ*z;
 
                 Vector3 position = new Vector3(posX, 0f, posZ);
-                HexCell hexCell = new HexCell(new HexCellCoords(x, z), position,HexCellColorManager.instance.GetColor(HexCellColorEnum.White));
-                
+                HexCell hexCell = new HexCell(new HexCellCoords(x, z), position,HexCellColorManager.instance.GetColor(HexCellColorEnum.White),new PlainTerrainData());
                 hexCellsMap[new HexCellCoords(x,z)] = hexCell;
+                
+                // hexCell.RefreshAllConnectionsAndTriangles();
                 InsertChunkMap(hexCell);
                 
                 root.Insert(hexCell);
             }
         }
+        
+        foreach(var cell in hexCellsMap.Values)cell.RefreshAllConnectionsAndTriangles();
+        
 
         foreach (var chunk in chunksMap.Values)
         {
@@ -119,7 +130,7 @@ public class HexCellMapManager : MonoBehaviour
 
     private void InsertChunkMap(HexCell hexCell)
     {
-        var key = hexCell.HexCellCoords / (chunkSize_Width, chunkSize_Height);
+        var key = hexCell.hexCellCoords / (chunkSize_Width, chunkSize_Height);
         if (!chunksMap.ContainsKey(key))
         {
             var it=Instantiate(chunkPrefab, Vector3.zero,Quaternion.identity,transform);
@@ -135,14 +146,8 @@ public class HexCellMapManager : MonoBehaviour
     }
 
     #endregion
+    
    
-
-   
-
-    public HexCellChunk GetChunk(HexCell hexCell)
-    {
-        return chunksMap[hexCell.HexCellCoords/(chunkSize_Width, chunkSize_Height)];
-    }
 
 
     #region GetNeighbors
@@ -150,7 +155,7 @@ public class HexCellMapManager : MonoBehaviour
     public void GetCellNeighbors(HexCell center, ref List<HexCell> neighbors, uint radius=2)
     {
         if (radius == 1) return;
-        (int cx, int cy, int cz) = HexCellMetrics.OffsetToCube(center.HexCellCoords);
+        (int cx, int cy, int cz) = HexCellMetrics.OffsetToCube(center.hexCellCoords);
 
         for (int dx = -(int)radius; dx <= (int)radius; dx++)
         {
@@ -201,5 +206,10 @@ public class HexCellMapManager : MonoBehaviour
     }
 
     #endregion
+
+    public LOD_Level GetLevel()
+    {
+        return lod;
+    }
    
 }

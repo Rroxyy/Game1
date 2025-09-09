@@ -22,12 +22,19 @@ public class HexCellCoordUI : MonoBehaviour
         
     }
 
-    public void SetUp(HexCell cell)
+    public void SetUp(HexCell cell,bool showCubeCoordinates)
     {
         gameObject.hideFlags = HideFlags.NotEditable | HideFlags.HideInHierarchy;
-        HexCellCoords id = cell.HexCellCoords;
-        var _id = HexCellMetrics.OffsetToCube(id);
-        textMesh.text = _id.ToString();
+        HexCellCoords id = cell.hexCellCoords;
+        if (showCubeCoordinates)
+        {
+            var _id = HexCellMetrics.OffsetToCube(id);
+            textMesh.text = _id.ToString();
+        }
+        else
+        {
+            textMesh.text=id.ToString();
+        }
 
         var pos= cell.positionWS;
         pos.y += 0.1f;

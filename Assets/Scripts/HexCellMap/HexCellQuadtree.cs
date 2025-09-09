@@ -49,7 +49,7 @@ public class HexCellQuadtree
 
         foreach (var child in children)
         {
-            if (child.aabb_id.Contains(new Vector3Int(newCell.HexCellCoords.x, 0, newCell.HexCellCoords.z)))
+            if (child.aabb_id.Contains(new Vector3Int(newCell.hexCellCoords.x, 0, newCell.hexCellCoords.z)))
             {
                 child.Insert(newCell);
                 break;

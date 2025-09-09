@@ -7,6 +7,8 @@ public class HexCellCoordShowManager : MonoBehaviour
     [SerializeField]private GameObject showIdPrefab;
     [SerializeField]private RectTransform instanceTransform;
 
+    [SerializeField] private bool showCubeCoords=false;
+
     
     public static HexCellCoordShowManager Instance;
 
@@ -21,7 +23,7 @@ public class HexCellCoordShowManager : MonoBehaviour
     public HexCellCoordUI GetHexCellCoordUI(HexCell cell)
     {
         var hexCellCoordUI = Instantiate(showIdPrefab, instanceTransform).GetComponent<HexCellCoordUI>();
-        hexCellCoordUI.SetUp(cell);
+        hexCellCoordUI.SetUp(cell,showCubeCoords);
         return hexCellCoordUI;
     }
 }

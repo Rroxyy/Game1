@@ -20,7 +20,7 @@ public enum HexCellDirection
 
 public static class HexCellMetrics
 {
-    public static readonly float outerRadius = 0.5f;
+    public static readonly float outerRadius = 0.8f;
     public static readonly float innerRadius = Mathf.Sqrt(3f) * outerRadius / 2f;
 
     public static readonly float heightFactor = 0.3f;
@@ -50,7 +50,7 @@ public static class HexCellMetrics
     };
 
 
-    public static readonly float GapX = 0.2f;
+    public static readonly float GapX = outerRadius/2.0f;
     public static readonly float GapZ = GapX / 2 * Mathf.Sqrt(3);
 
     public static readonly AABB aabb = new AABB(new Vector3(-innerRadius, 0, -outerRadius),
@@ -90,6 +90,13 @@ public static class HexCellMetrics
     };
 
     #region Get Vertex Info
+    
+    public static void GetVertexByDirection(HexCellDirection direction, out Vector3 point)
+    {
+        int i = (int)direction;
+        point = corners[i];
+    }
+    
 
     public static void GetVertexByDirection(HexCellDirection direction, out Vector3 point1, out Vector3 point2)
     {
@@ -148,6 +155,16 @@ public static class HexCellMetrics
 
     #region Get Neighbors Info
 
+    public static HexCellDirection GetNextDirection(HexCellDirection direction)
+    {
+        return (HexCellDirection)(((int)direction + 1) % 6);
+    }
+    
+    public static HexCellDirection GetPrevioustDirection(HexCellDirection direction)
+    {
+        return (HexCellDirection)(((int)direction +5) % 6);
+    }
+
     public static HexCellDirection GetInverseDirection(HexCellDirection direction)
     {
         return (HexCellDirection)(((int)direction + 3) % 6);
@@ -156,8 +173,8 @@ public static class HexCellMetrics
 
     public static bool TryGetNeighborDirection(HexCell a, HexCell b, out HexCellDirection dir)
     {
-        var (ax, ay, az) = OffsetToCube(a.HexCellCoords);
-        var (bx, by, bz) = OffsetToCube(b.HexCellCoords);
+        var (ax, ay, az) = OffsetToCube(a.hexCellCoords);
+        var (bx, by, bz) = OffsetToCube(b.hexCellCoords);
 
         int dx = bx - ax;
         int dy = by - ay;
@@ -178,7 +195,7 @@ public static class HexCellMetrics
 
     public static HexCellCoords GetHexCellNeighborCoords(HexCell cell, HexCellDirection direction)
     {
-        HexCellCoords coords = cell.HexCellCoords;
+        HexCellCoords coords = cell.hexCellCoords;
         var offsets = (coords.z & 1) == 0 ? evenRowOffsets : oddRowOffsets;
 
         var (dx, dz) = offsets[(int)direction];

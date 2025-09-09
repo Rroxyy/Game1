@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
@@ -31,6 +32,9 @@ public class HexCellChunk : MonoBehaviour
     
     [Header("AABB Collider Show")]
     [SerializeField]private bool AABB_ShowTest = false;
+
+    [Header("Level of Detail")] 
+    private  LOD_Level lod=LOD_Level.LOD0;
     
     
     [Header("Test")]
@@ -166,6 +170,15 @@ public class HexCellChunk : MonoBehaviour
     
     #endregion
 
+    #region lod
+
+    public LOD_Level GetLOD()
+    {
+        return HexCellMapManager.instance.GetLevel();
+    }
+
+    #endregion
+    
     #region Gizmos
 
     private void OnDrawGizmos()
