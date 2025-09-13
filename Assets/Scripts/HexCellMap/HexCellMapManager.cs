@@ -12,7 +12,7 @@ public class HexCellMapManager : MonoBehaviour
 
     
     public Dictionary<HexCellCoords, HexCell> hexCellsMap{get; private set;}
-    public HexCellQuadtree root;
+    // public HexCellQuadtree root;
 
     [Header("Chunks")]
     public  int chunkSize_Height = 8;
@@ -24,7 +24,7 @@ public class HexCellMapManager : MonoBehaviour
     [Header("Test")] 
     [SerializeField] private bool test = false;
 
-    [SerializeField] private LOD_Level lod=LOD_Level.LOD0;
+    [SerializeField] private LOD_Level lod=LOD_Level.LOD1;
 
 
     public static HexCellMapManager instance;
@@ -64,7 +64,7 @@ public class HexCellMapManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        root = null;
+        // root = null;
     }
 
     public void SetDirtyChunk(HexCellChunk chunk)
@@ -85,7 +85,7 @@ public class HexCellMapManager : MonoBehaviour
         chunksMap = new Dictionary<HexCellCoords, HexCellChunk>();
 
         AABB_Int aabb = new AABB_Int(new Vector3Int(0, 0, 0), new Vector3Int(widthSize - 1, 0, heightSize - 1));
-        root = new HexCellQuadtree(aabb, null);
+        // root = new HexCellQuadtree(aabb, null);
         int x = 0;
         int z = 0;
 
@@ -114,7 +114,7 @@ public class HexCellMapManager : MonoBehaviour
                 // hexCell.RefreshAllConnectionsAndTriangles();
                 InsertChunkMap(hexCell);
                 
-                root.Insert(hexCell);
+                // root.Insert(hexCell);
             }
         }
         

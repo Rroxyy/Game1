@@ -29,9 +29,12 @@ public class HexCellChunk : MonoBehaviour
     [SerializeField] private bool testShowCoordsUI = false;
     private bool showCoords = false;
     private List<HexCellCoordUI> coordsUI = new List<HexCellCoordUI>();
-    
-    [Header("AABB Collider Show")]
-    [SerializeField]private bool AABB_ShowTest = false;
+
+    [Header("AABB Collider")]
+    [SerializeField]private bool ShowChunkAABB = false;
+    [SerializeField]private bool ShowCellsAABB = false;
+    public HexCellQuadtree root{get; private set;}
+
 
     [Header("Level of Detail")] 
     private  LOD_Level lod=LOD_Level.LOD0;
@@ -73,6 +76,7 @@ public class HexCellChunk : MonoBehaviour
     public void SetUp(AABB_Int _aadd_id)
     {
         aabb_id = _aadd_id;
+        root = new HexCellQuadtree(aabb_id,null);
     }
 
 
@@ -113,11 +117,11 @@ public class HexCellChunk : MonoBehaviour
 
     #region Change Mesh Data
 
-    public void SetCellDirty(HexCell cell,bool dirtyCell=true)
+    public void SetCellDirty(HexCell cell,bool dirtyNeighborCell=true)
     {
         dirtyCells.Add(cell);
 
-        if (dirtyCell)
+        if (dirtyNeighborCell)
         {
             foreach (var dir in HexCellMetrics.HalfInverseDirections)
             {
@@ -138,6 +142,7 @@ public class HexCellChunk : MonoBehaviour
     public void AddHexCell(HexCell _cell)
     {
         cells.Add(_cell);
+        root.Insert(_cell);
     }
 
     public void InitializeChunkMesh()
@@ -184,14 +189,27 @@ public class HexCellChunk : MonoBehaviour
     private void OnDrawGizmos()
     {
 
-        if (AABB_ShowTest)
+        if (ShowChunkAABB)
         {
-            AABB aabbCollider = HexCellMapManager.instance.root.GetCombinedCollider(aabb_id);
+            AABB aabbCollider = root.GetCombinedCollider(aabb_id);
             Vector3 center = aabbCollider.center;
             Vector3 size= aabbCollider.size;
         
             Gizmos.color = Color.red;
             Gizmos.DrawWireCube(center, size);
+        }
+
+        if (ShowCellsAABB)
+        {
+            Gizmos.color = Color.green;
+            foreach (var cell in cells)
+            {
+                var aabb = cell.GetAABB_Collider();
+                // var aabb = HexCellMetrics.GetAABB(cell.positionWS);
+                Vector3 center = aabb.center;
+                Vector3 size= aabb.size;
+                Gizmos.DrawWireCube(center, size);
+            }
         }
 
         if (testShowTest)

@@ -22,6 +22,12 @@ public class AABB
         this.max = max;
     }
 
+    public AABB(AABB other)
+    {
+        this.min = other.min;
+        this.max = other.max;
+    }
+
     public void Reset()
     {
         min.x = float.PositiveInfinity;
@@ -31,6 +37,12 @@ public class AABB
         max.x = float.NegativeInfinity;
         max.y = float.NegativeInfinity;
         max.z = float.NegativeInfinity;
+    }
+
+    public void Reset(AABB other)
+    {
+        min=other.min;
+        max=other.max;
     }
 
 

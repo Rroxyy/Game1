@@ -14,7 +14,7 @@ public class HexCellMesh
     private Mesh mesh;
 
     private List<HexCellVertexData> vertexBufferList;
-    private List<Int16> indicesList;
+    private List<int> indicesList;
     
     private static readonly MeshUpdateFlags 
         HexCellMeshUpdateFlag=MeshUpdateFlags.DontRecalculateBounds 
@@ -27,7 +27,7 @@ public class HexCellMesh
         chunk = _chunk;
         mesh = _mesh;
         vertexBufferList = new List<HexCellVertexData>();
-        indicesList = new List<Int16>();
+        indicesList = new List<int>();
 
     }
     
@@ -37,11 +37,11 @@ public class HexCellMesh
 
     public void RebuildMesh(List<HexCell> cells)
     {
-    
+
         foreach (HexCell cell in cells)
         {
             cell.SetCellMeshIndex(vertexBufferList.Count);
-            TerrainMeshOperate.AddCell(cell,vertexBufferList,chunk.GetLOD());
+            TerrainMeshOperate.AddCell(cell,vertexBufferList,indicesList,chunk.GetLOD());
         }
     
         mesh.Clear();
@@ -53,12 +53,8 @@ public class HexCellMesh
         );
     
         mesh.SetVertexBufferData(vertexBufferList, 0, 0, vertexBufferList.Count, 0,HexCellMeshUpdateFlag);
-
-        indicesList = new List<Int16>(vertexBufferList.Count);
-        for (int i = 0; i < vertexBufferList.Count; i++)
-            indicesList.Add((Int16)i);
-
-        mesh.SetIndexBufferParams(indicesList.Count, IndexFormat.UInt16);
+        
+        mesh.SetIndexBufferParams(indicesList.Count, IndexFormat.UInt32);
         mesh.SetIndexBufferData(indicesList, 0, 0, indicesList.Count,HexCellMeshUpdateFlag);
 
         mesh.SetSubMesh(0, new SubMeshDescriptor(0, indicesList.Count, MeshTopology.Triangles), HexCellMeshUpdateFlag);
@@ -66,12 +62,12 @@ public class HexCellMesh
         RebuildBounds();
         
         vertexBufferList = new List<HexCellVertexData>();
-        indicesList = new List<Int16>();
+        indicesList = new List<int>();
     }
 
     public void RebuildSingleCellMesh(HexCell cell)
     {
-        TerrainMeshOperate.AddCell(cell, vertexBufferList,chunk.GetLOD());
+        TerrainMeshOperate.AddCell(cell, vertexBufferList,indicesList,chunk.GetLOD());
         
         mesh.SetVertexBufferData(vertexBufferList, 
             0, 
@@ -87,7 +83,7 @@ public class HexCellMesh
 
     public void RebuildBounds()
     {
-        AABB aabbCollider = HexCellMapManager.instance.root.GetCombinedCollider(chunk.aabb_id);
+        AABB aabbCollider = chunk.root.GetCombinedCollider(chunk.aabb_id);
         mesh.bounds = new Bounds(aabbCollider.center, aabbCollider.size);
     }
     

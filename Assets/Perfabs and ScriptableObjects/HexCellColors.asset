@@ -16,8 +16,8 @@ MonoBehaviour:
   - colorEnumType: 0
     color: {r: 1, g: 1, b: 1, a: 0}
   - colorEnumType: 1
-    color: {r: 0.65723264, g: 1, b: 0.72545075, a: 0}
+    color: {r: 0, g: 1, b: 0.19540238, a: 0}
   - colorEnumType: 2
-    color: {r: 0.65882355, g: 0.7970183, b: 1, a: 0}
+    color: {r: 0, g: 0.40229893, b: 1, a: 0}
   - colorEnumType: 3
-    color: {r: 0.9761435, g: 1, b: 0.65882355, a: 0}
+    color: {r: 1, g: 0.9480401, b: 0, a: 0}

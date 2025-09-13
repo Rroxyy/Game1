@@ -107,11 +107,29 @@ public class InputManager : MonoBehaviour
 
     public HexCell GetMouseRayCell()
     {
-        if (mouseRayCell_Dirty)
+        float minDistance = Mathf.Infinity;
+        mouseRayCell = null;
+        var ray = GetMouseRay();
+        foreach (var chunk in HexCellMapManager.instance.chunksMap.Values)
         {
-            mouseRayCell = HexCellMapManager.instance.root.GetMinDistanceHexCellByRay(GetMouseRay());
-            mouseRayCell_Dirty = false;
+            var cell = chunk.root.GetMinDistanceHexCellByRay(ray);
+            if (cell == null) continue;
+            if (mouseRayCell == null)
+            {
+                mouseRayCell = cell;
+                minDistance = Vector3.Distance(ray.origin, cell.positionWS);
+            }
+            var distance = Vector3.Distance(ray.origin, cell.positionWS);
+            if (minDistance > distance)
+            {
+                mouseRayCell = cell;
+                minDistance = distance;
+            }
         }
+        
+        
+        mouseRayCell_Dirty = false;
+
         return mouseRayCell;
     }
 

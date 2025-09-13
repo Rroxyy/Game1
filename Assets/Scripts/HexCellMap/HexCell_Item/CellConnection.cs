@@ -7,10 +7,10 @@ public class CellConnection
     public HexCell OtherHexCell{get;private set;}
     public HexCellDirection direction { get;private set; }
 
-    public CellConnection(HexCell cell1, HexCell cell2,HexCellDirection _dir)
+    public CellConnection(HexCell _BelongsToHexCell, HexCell _OtherHexCell,HexCellDirection _dir)
     {
-        BelongsToHexCell = cell1;
-        OtherHexCell = cell2;
+        BelongsToHexCell = _BelongsToHexCell;
+        OtherHexCell = _OtherHexCell;
         direction = _dir;
     }
 

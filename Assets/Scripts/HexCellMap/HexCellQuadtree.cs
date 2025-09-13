@@ -84,13 +84,13 @@ public class HexCellQuadtree
         // 当前节点的 aabb_id 与 queryAABB 完全不重合
         if (!aabb_id.Overlaps(queryAABB))
         {
-            return null; // 默认无效 AABB
+            return null; 
         }
 
         // 如果是叶子节点，直接返回当前节点的 aabb_collider
         if (isLeaf)
         {
-            return cell?.GetAABB_Collider();
+            return cell == null ? null : new AABB(cell.GetAABB_Collider());
         }
 
         // 如果是非叶子节点，递归子节点
@@ -198,7 +198,7 @@ public class HexCellQuadtree
         
         if (cell != null)
         {
-            aabb_collider=cell.GetAABB_Collider();
+            aabb_collider .Reset(cell.GetAABB_Collider()); 
         }
         else
         {

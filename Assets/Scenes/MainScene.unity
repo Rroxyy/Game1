@@ -248,12 +248,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 919eca14c19da86499ffae7f0a34da24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heightSize: 30
-  widthSize: 30
-  chunkSize_Height: 8
-  chunkSize_Width: 8
+  heightSize: 2
+  widthSize: 2
+  chunkSize_Height: 2
+  chunkSize_Width: 2
   chunkPrefab: {fileID: 1938141394758889182, guid: 6c79d15760fa63a4bad5fa71c9901348, type: 3}
   test: 0
+  lod: 0
 --- !u!114 &534488094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -800,6 +801,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showIdPrefab: {fileID: 3329593102947977927, guid: d1431ccdc21b44245873c09cb03b20a8, type: 3}
   instanceTransform: {fileID: 338646173}
+  showCubeCoords: 0
 --- !u!114 &1303546148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -977,7 +979,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   radius: 1
   hexCellColorEnum: 0
-  height: 2
+  height: 0
 --- !u!114 &1997507139
 MonoBehaviour:
   m_ObjectHideFlags: 0

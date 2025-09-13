@@ -55,10 +55,12 @@ Shader "Akko/HexCellShader"
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
-                float4 color : COLOR;
                 float3 positionWS : TEXCOORD0;
                 float3 normalWS : TEXCOORD1;
                 float4 shadowCoord : TEXCOORD2;
+                // nointerpolation float4 color : COLOR0;
+                float4 color : COLOR0;
+
             };
 
             CBUFFER_START(UnityPerMaterial)
@@ -100,13 +102,14 @@ Shader "Akko/HexCellShader"
             {
                 // return half4(input.normalWS,1);
                 // 主光源方向和颜色
-                Light mainLight = GetMainLight(input.shadowCoord);
+                float4 shadowCoord=TransformWorldToShadowCoord(input.positionWS);
+                Light mainLight = GetMainLight(shadowCoord);
 
                 // 阴影强度 (0=完全在阴影里, 1=完全不在阴影)
                 half shadowAtten = mainLight.shadowAttenuation;
 
                 // --- 环境光 ---
-                half3 ambient = input.color.rgb * _BaseColor.rgb * _AmbientFactor;
+                half3 ambient = input.color.rgb * _AmbientFactor;
 
                 // --- 漫反射 ---
                 float3 N = normalize(input.normalWS);
@@ -119,7 +122,7 @@ Shader "Akko/HexCellShader"
                 float3 V = normalize(GetWorldSpaceViewDir(input.positionWS)); // 视线方向
                 float3 H = normalize(L + V); // 半角向量
                 half NdotH = saturate(dot(N, H));
-                half3 specular = pow(NdotH, _Shininess) * _SpecularStrength * mainLight.color.rgb;
+                half3 specular = pow(NdotH, _Shininess) * _SpecularStrength/100.0f * mainLight.color.rgb;
 
 
                 // --- 阴影混合 ---
