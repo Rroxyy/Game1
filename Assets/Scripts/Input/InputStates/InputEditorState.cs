@@ -5,7 +5,6 @@ using UnityEngine.Serialization;
 
 public class InputEditorState : InputState
 {
-    [FormerlySerializedAs("changeRadius")]
     [Header("Base")] 
     [SerializeField, Range(0, 10)] private int radius = 1;
     
@@ -14,6 +13,10 @@ public class InputEditorState : InputState
     
     [Header("Height Mode")]
     [SerializeField]private uint height = 2;
+
+    [Header("Terrain Mode")] 
+    [SerializeField] private bool setTerrainFeature=false;
+    [SerializeField] private TerrainFeatureType terrainFeatureType;
     
     public override void OnEnter()
     {
@@ -33,6 +36,15 @@ public class InputEditorState : InputState
         {
             var cell = InputManager.instance.GetMouseRayCell();
             if (cell == null) return;
+
+            if (setTerrainFeature)
+            {
+                TerrainFeatureHelper.SetTerrainFeature(cell, terrainFeatureType,InputManager.instance.GetMouseRay());
+                return;
+            }
+            
+            
+            
             List<HexCell> neighbors = new List<HexCell>();
             // List<HexCellDirection> directions = new List<HexCellDirection>();
             

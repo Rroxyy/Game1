@@ -3,10 +3,9 @@
 public class HexCellCollider
 {
     public AABB aabb { get;private set; }
-
-    private HexCell cell;
-    
     private bool dirty=true;
+    public HexCell cell{ get; private set; }
+    private HexCellQuadtree quadtree;
 
     public HexCellCollider(HexCell _cell)
     {
@@ -14,16 +13,25 @@ public class HexCellCollider
         aabb = new AABB();
         dirty = true;
     }
+    
+    public void SetQuadTree(HexCellQuadtree _tree)=> quadtree = _tree;
 
     public void SetDirty(bool setNeighborDirty=true)
     {
         dirty = true;
+        quadtree.AABBCollider_Dirty();
         if (!setNeighborDirty) return;
         foreach (var dir in HexCellMetrics.HalfDirections)
         {
             var neighbor = HexCellMapManager.instance.GetCellNeighbors(cell, dir);
             neighbor?.hexCellCollider.SetDirty(false);
         }
+    }
+
+    public AABB GetAABB()
+    {
+        RefreshAABB();
+        return aabb;
     }
     public void RefreshAABB()
     {
@@ -46,5 +54,8 @@ public class HexCellCollider
         dirty = false;
 
     }
+    
+   
+
 
 }

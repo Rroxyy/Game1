@@ -111,14 +111,14 @@ public class HexCellMapManager : MonoBehaviour
                 HexCell hexCell = new HexCell(new HexCellCoords(x, z), position,HexCellColorManager.instance.GetColor(HexCellColorEnum.White),new PlainTerrainData());
                 hexCellsMap[new HexCellCoords(x,z)] = hexCell;
                 
-                // hexCell.RefreshAllConnectionsAndTriangles();
+                hexCell.RefreshCellAndNeighbor();
                 InsertChunkMap(hexCell);
                 
                 // root.Insert(hexCell);
             }
         }
         
-        foreach(var cell in hexCellsMap.Values)cell.RefreshAllConnectionsAndTriangles();
+        // foreach(var cell in hexCellsMap.Values)cell.RefreshCellAndNeighbor();
         
 
         foreach (var chunk in chunksMap.Values)

@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CameraController : MonoBehaviour
 {
+    [FormerlySerializedAs("camera")]
     [Header("Base")]
-    [SerializeField] private Camera camera;
+    [SerializeField] private Camera cam;
 
     [Header("Move Settings")]
     [SerializeField] private float moveSpeed = 5f;
@@ -54,4 +56,6 @@ public class CameraController : MonoBehaviour
         right.y = 0;
         return right.normalized;
     }
+    
+    public Camera GetCamera() => cam;
 }

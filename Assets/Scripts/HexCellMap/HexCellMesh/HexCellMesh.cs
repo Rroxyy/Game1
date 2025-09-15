@@ -37,11 +37,25 @@ public class HexCellMesh
 
     public void RebuildMesh(List<HexCell> cells)
     {
-
+        
+        
         foreach (HexCell cell in cells)
         {
             cell.SetCellMeshIndex(vertexBufferList.Count);
-            TerrainMeshOperate.AddCell(cell,vertexBufferList,indicesList,chunk.GetLOD());
+            TerrainMeshOperate.AddCellMesh(cell, vertexBufferList,indicesList, chunk.GetLOD(),cell.GetCellMesh_Index());
+
+            foreach (var connection in cell.cellConnections.Values)
+            {
+                connection.SetCellMeshIndex(vertexBufferList.Count);
+                TerrainMeshOperate.AddConnectionMesh(connection, vertexBufferList, indicesList,chunk.GetLOD(),connection.GetCellMesh_Index());
+            }
+
+            foreach (var gapTriangle in cell.cellGapTriangles.Values)
+            {
+                gapTriangle.SetCellMeshIndex(vertexBufferList.Count);
+                TerrainMeshOperate.AddGapTriangleMesh(gapTriangle, vertexBufferList, indicesList,chunk.GetLOD(),gapTriangle.GetCellMesh_Index());
+            }
+            
         }
     
         mesh.Clear();
@@ -60,23 +74,35 @@ public class HexCellMesh
         mesh.SetSubMesh(0, new SubMeshDescriptor(0, indicesList.Count, MeshTopology.Triangles), HexCellMeshUpdateFlag);
 
         RebuildBounds();
-        
+
         vertexBufferList = new List<HexCellVertexData>();
         indicesList = new List<int>();
     }
 
     public void RebuildSingleCellMesh(HexCell cell)
     {
-        TerrainMeshOperate.AddCell(cell, vertexBufferList,indicesList,chunk.GetLOD());
+        int baseIndex=cell.GetCellMesh_Index();
+        TerrainMeshOperate.AddCellMesh(cell, vertexBufferList,indicesList, chunk.GetLOD(),cell.GetCellMesh_Index()-baseIndex);
+
+        foreach (var connection in cell.cellConnections.Values)
+        {
+            TerrainMeshOperate.AddConnectionMesh(connection, vertexBufferList, indicesList,chunk.GetLOD(),connection.GetCellMesh_Index()-baseIndex);
+        }
+
+        foreach (var gapTriangle in cell.cellGapTriangles.Values)
+        {
+            TerrainMeshOperate.AddGapTriangleMesh(gapTriangle, vertexBufferList, indicesList,chunk.GetLOD(),gapTriangle.GetCellMesh_Index()-baseIndex);
+        }
         
         mesh.SetVertexBufferData(vertexBufferList, 
             0, 
-            cell.cellMesh_Index,
+            cell.GetCellMesh_Index(),
             vertexBufferList.Count,
             0,
             HexCellMeshUpdateFlag);
-
+        
         vertexBufferList.Clear();
+        indicesList.Clear();
     }
 
     

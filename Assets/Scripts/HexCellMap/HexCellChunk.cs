@@ -37,12 +37,11 @@ public class HexCellChunk : MonoBehaviour
 
 
     [Header("Level of Detail")] 
-    private  LOD_Level lod=LOD_Level.LOD0;
+    // private  LOD_Level lod=LOD_Level.LOD0;
     
     
     [Header("Test")]
     [SerializeField] private bool testShowTest = false;
-    [SerializeField] private float testLen = 0.2f;
     
     private void Awake()
     {
@@ -115,7 +114,7 @@ public class HexCellChunk : MonoBehaviour
     #endregion
 
 
-    #region Change Mesh Data
+    #region Render Method
 
     public void SetCellDirty(HexCell cell,bool dirtyNeighborCell=true)
     {
@@ -142,7 +141,7 @@ public class HexCellChunk : MonoBehaviour
     public void AddHexCell(HexCell _cell)
     {
         cells.Add(_cell);
-        root.Insert(_cell);
+        root.Insert(_cell.hexCellCollider);
     }
 
     public void InitializeChunkMesh()

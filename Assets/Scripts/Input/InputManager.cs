@@ -104,9 +104,14 @@ public class InputManager : MonoBehaviour
     {
         return Input.mousePosition;
     }
+    
+    
+
+    #region Ray Cast Cell
 
     public HexCell GetMouseRayCell()
     {
+        if (!mouseRayCell_Dirty) return mouseRayCell;
         float minDistance = Mathf.Infinity;
         mouseRayCell = null;
         var ray = GetMouseRay();
@@ -127,11 +132,17 @@ public class InputManager : MonoBehaviour
             }
         }
         
-        
         mouseRayCell_Dirty = false;
-
         return mouseRayCell;
     }
+
+   
+
+    #endregion
+   
+        
+        
+        
 
     #endregion
 

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class CellConnection
+public class CellConnection: Cell_Item
 {
+    public override CellItemType itemType => CellItemType.Connection;
+
     public HexCell BelongsToHexCell{get;private set;}
     public HexCell OtherHexCell{get;private set;}
     public HexCellDirection direction { get;private set; }
@@ -20,4 +22,10 @@ public class CellConnection
         OtherHexCell.GetVertexByDirection(HexCellMetrics.GetInverseDirection(direction), out  b1, out b2);
        
     }
+
+    public override string ToString()
+    {
+        return "Cell Connection, BelongsToHexCell: "+BelongsToHexCell.ToString()+" , "+"OtherHexCell: "+OtherHexCell.ToString();
+    }
+
 }

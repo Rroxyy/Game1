@@ -7,27 +7,28 @@ using UnityEngine.Serialization;
 // [System.Serializable]
 
 
-
 // [System.Serializable]
-public class HexCell
+public class HexCell : Cell_Item
 {
+    public override CellItemType itemType => CellItemType.HexCell;
+
     public HexCellCoords hexCellCoords;
+
     public Vector3 positionWS;
+
     // public Vector3 normal;
     public Color cellColor;
-    
-    public HexCellCollider hexCellCollider{get; private set;}
+
+    public HexCellCollider hexCellCollider { get; private set; }
 
     //Terrain
-    public TerrainData terrainData{get; private set;}
-    public TerrainType terrainType=>terrainData.terrainType;
+    public TerrainData terrainData { get; private set; }
+    public TerrainType terrainType => terrainData.terrainType;
 
-    private HexCellChunk chunk;
-    private HexCellQuadtree hexCellQuadtree;
+    public HexCellChunk chunk { get; private set; }
 
     public Dictionary<HexCellDirection, CellConnection> cellConnections { get; private set; }
     public Dictionary<HexCellDirection, CellGapTriangle> cellGapTriangles { get; private set; }
-    public int cellMesh_Index { get; private set; }
 
     public HexCell(HexCellCoords hexCellCoords, Vector3 _positionWS, Color color, TerrainData _terrainData)
     {
@@ -36,7 +37,7 @@ public class HexCell
         cellColor = color;
         // normal = Vector3.up;
         cellMesh_Index = -1;
-        
+
         terrainData = _terrainData;
 
         cellConnections = new Dictionary<HexCellDirection, CellConnection>();
@@ -50,33 +51,31 @@ public class HexCell
         chunk = _chunk;
     }
 
-    public void SetHexMapQuadtree(HexCellQuadtree _quadtree)
-    {
-        hexCellQuadtree = _quadtree;
-    }
 
-    public void SetCellMeshIndex(int _chunkIndex)
-    {
-        cellMesh_Index = _chunkIndex;
-    }
+    
 
-    #region Mesh Dirty Operations
+    #region Refresh Connection and Gap Triangle
 
-    public void RefreshAllConnectionsAndTriangles()
+    public void RefreshSingleCell()
     {
         foreach (var dir in HexCellMetrics.HalfDirections)
         {
-            RefreshSingleConnectionAndTriangle(dir);
-        }
-
-        foreach (var dir in HexCellMetrics.HalfInverseDirections)
-        {
-            HexCellMapManager.instance.GetCellNeighbors(this, dir)
-                ?.RefreshSingleConnectionAndTriangle(HexCellMetrics.GetInverseDirection(dir));
+            RefreshCTbyDir(dir);
         }
     }
 
-    public void RefreshSingleConnectionAndTriangle(HexCellDirection dir)
+    public void RefreshCellAndNeighbor()
+    {
+        RefreshSingleCell();
+
+        foreach (var dir in HexCellMetrics.AllDirections)
+        {
+            HexCellMapManager.instance.GetCellNeighbors(this, dir)
+                ?.RefreshSingleCell();
+        }
+    }
+
+    public void RefreshCTbyDir(HexCellDirection dir)
     {
         var neighbor = HexCellMapManager.instance.GetCellNeighbors(this, dir);
         if (neighbor == null) return;
@@ -86,7 +85,7 @@ public class HexCell
             cellConnections.Add(dir, connection);
         }
 
-        if (dir == HexCellMetrics.HalfDirections[0])return ;
+        if (dir == HexCellMetrics.HalfDirections[0]) return;
 
         var preDir = HexCellMetrics.GetPrevioustDirection(dir);
         var preNeighbor = HexCellMapManager.instance.GetCellNeighbors(this, preDir);
@@ -98,7 +97,12 @@ public class HexCell
             cellGapTriangles.Add(dir, gapTriangle);
         }
     }
-    
+
+    #endregion
+
+
+    #region Mesh Dirty Operations
+
     public void SetChunkDirty(bool dirtyNeighborCell = true)
     {
         chunk.SetCellDirty(this, dirtyNeighborCell);
@@ -116,17 +120,9 @@ public class HexCell
         float temp = _height * HexCellMetrics.heightFactor;
         if (Mathf.Abs(positionWS.y - temp) < 1e-4) return;
         positionWS.y = temp;
-        SetChunkDirty(true);
-        if (hexCellQuadtree == null)
-        {
-            Debug.Log(hexCellCoords + " hex cell quadtree is null");
-            return;
-        }
-
-        hexCellQuadtree.AABBCollider_Dirty();
-        hexCellCollider.SetDirty();
+        SetChunkDirty(true); //render dirty
+        hexCellCollider.SetDirty(); //collider dirty
     }
-
 
     #endregion
 
@@ -148,14 +144,14 @@ public class HexCell
         point1 = p1 + positionWS;
         point2 = p2 + positionWS;
     }
-    
+
     public bool GetMidConnectionVerticesByDirection(HexCellDirection direction, ref Vector3 a1, ref Vector3 a2,
         ref Vector3 b1, ref Vector3 b2)
     {
-        var neighbor = HexCellMapManager.instance.GetCellNeighbors(this,direction);
+        var neighbor = HexCellMapManager.instance.GetCellNeighbors(this, direction);
         if (neighbor == null) return false;
-        GetVertexByDirection(direction, out a1,out a2);
-        neighbor.GetVertexByDirection(HexCellMetrics.GetInverseDirection(direction), out b1,out b2);
+        GetVertexByDirection(direction, out a1, out a2);
+        neighbor.GetVertexByDirection(HexCellMetrics.GetInverseDirection(direction), out b1, out b2);
 
         b1 = (b1 + a2);
         b2 = (b2 + a1);
@@ -184,13 +180,14 @@ public class HexCell
         else
         {
             return HexCellMapManager.instance.GetCellNeighbors(this, direction)
-                ?.GetCellGapTriangleByDirection(HexCellMetrics.GetNextDirection(HexCellMetrics.GetInverseDirection(direction)));
+                ?.GetCellGapTriangleByDirection(
+                    HexCellMetrics.GetNextDirection(HexCellMetrics.GetInverseDirection(direction)));
         }
     }
-    
+
     public Vector3 GetVertexByIndex(int index)
     {
-        return HexCellMetrics.corners[index%6] + positionWS;
+        return HexCellMetrics.corners[index % 6] + positionWS;
     }
 
     #endregion
@@ -200,26 +197,30 @@ public class HexCell
 
     public AABB GetAABB_Collider()
     {
-        hexCellCollider.RefreshAABB();
-        
-        return hexCellCollider.aabb;
+        return hexCellCollider.GetAABB();
     }
 
-    public bool Contains(Ray ray)
+    public bool ContainsCell(Ray ray)
     {
-        return TerrainMeshOperate.Contains(this,ray,chunk.GetLOD());
+        return TerrainMeshOperate.ContainsCell(this, ray, chunk.GetLOD());
     }
 
-
-    public bool Contains(Vector3 point)
+    public bool ContainsConnection(Ray ray, out CellConnection connection)
     {
-        return TerrainMeshOperate.Contains(this,point,chunk.GetLOD());
+        return TerrainMeshOperate.ContainsConnection(this, ray, out connection, chunk.GetLOD());
+    }
+
+    public bool ContainsGapTriangle(Ray ray, out CellGapTriangle gapTriangle)
+    {
+        return TerrainMeshOperate.ContainsGapTriangle(this, ray, out gapTriangle, chunk.GetLOD());
     }
 
     #endregion
 
+  
+
     public override string ToString()
     {
-        return hexCellCoords.ToString();
+        return "HexCell :" + hexCellCoords.ToString();
     }
 }

@@ -11,7 +11,8 @@ public class HexCellQuadtree
 
     [SerializeField] private List<HexCellQuadtree> children;
     [SerializeField] private HexCellQuadtree father;
-    [SerializeField] private HexCell cell;
+    // [SerializeField] private HexCell cell;
+    [SerializeField] private HexCellCollider cellCollider;
     public uint treeHeight { get; private set; }
     public bool isLeaf;
 
@@ -22,54 +23,45 @@ public class HexCellQuadtree
         isLeaf = true;
         treeHeight = 0;
         father = _father;
-        cell = null;
+        // cell = null;
+        cellCollider = null;
         aabbCollider_Dirty = true;
     }
 
     //插入
-    public void Insert(HexCell newCell)
+    public void Insert(HexCellCollider newCollider)
     {
         // aabb_collider.Encapsulate(newCell.GetAABB_Collider());
 
         if (isLeaf)
         {
-            if (cell != null)
+            if (cellCollider != null)
             {
                 Subdivide();
-                Insert(cell);
-                cell = null;
-                Insert(newCell);
+                Insert(cellCollider);
+                
+                cellCollider = null;
+                Insert(newCollider);
                 return;
             }
 
-            cell = newCell;
-            cell.SetHexMapQuadtree(this);
+            cellCollider = newCollider;
+            cellCollider.SetQuadTree(this);
             return;
         }
 
         foreach (var child in children)
         {
+            var newCell = newCollider.cell;
             if (child.aabb_id.Contains(new Vector3Int(newCell.hexCellCoords.x, 0, newCell.hexCellCoords.z)))
             {
-                child.Insert(newCell);
+                child.Insert(newCollider);
                 break;
             }
         }
     }
 
-    public void GetAllChildren(List<HexCell> list)
-    {
-        if (isLeaf)
-        {
-            if (cell != null) list.Add(cell);
-            return;
-        }
-
-        foreach (var child in children)
-        {
-            child.GetAllChildren(list);
-        }
-    }
+   
 
 
     #region Collider AABB methods
@@ -90,7 +82,7 @@ public class HexCellQuadtree
         // 如果是叶子节点，直接返回当前节点的 aabb_collider
         if (isLeaf)
         {
-            return cell == null ? null : new AABB(cell.GetAABB_Collider());
+            return cellCollider == null ? null : new AABB(cellCollider.GetAABB());
         }
 
         // 如果是非叶子节点，递归子节点
@@ -128,18 +120,11 @@ public class HexCellQuadtree
             return null;
         }
 
-        if (isLeaf && cell != null)
+        if (isLeaf && cellCollider != null)
         {
-            if (cell.Contains(ray))
-            {
-                return cell;
-            }
-            else
-            {
-                return null;
-            }
+            return cellCollider.cell;
         }
-        if (isLeaf && cell == null) return null;
+        if (isLeaf && cellCollider == null) return null;
 
         HexCell ret = null;
         HexCell temp = null;
@@ -151,22 +136,22 @@ public class HexCellQuadtree
             
             if (temp != null)
             {
-                if (!temp.Contains(ray)) continue;
                 if (ret == null)
                 {
                     ret = temp;
-                    continue;
                 }
                 else
                 {
                     
                     float distance1 = Vector3.Distance(ray.origin, ret.positionWS);
-                    float distance2 = Vector3.Distance(ray.origin, temp.positionWS);
+                    float distance2 = Vector3.Distance(ray.origin, temp.positionWS); 
+                   
 
                     if (distance1 > distance2)
                     {
                         ret = temp;
                     }
+                    
                 }
                 
             }
@@ -196,9 +181,9 @@ public class HexCellQuadtree
         }
         
         
-        if (cell != null)
+        if (cellCollider != null)
         {
-            aabb_collider .Reset(cell.GetAABB_Collider()); 
+            aabb_collider .Reset(cellCollider.GetAABB()); 
         }
         else
         {
@@ -229,7 +214,7 @@ public class HexCellQuadtree
 
    
 
-    #region Basically not used
+    #region Basically not used(initialize function)
     private void Subdivide()
     {
         isLeaf = false;

@@ -4,9 +4,12 @@ using UnityEngine;
 public interface ITerrainOperate
 {
     void AddCellMesh(HexCell cell, List<HexCellVertexData> vertexBufferList, List<int> indicesList);
-    void AddConnectionMesh(HexCell cell, List<HexCellVertexData> vertexBufferList, List<int> indicesList);
-    void AddGapTriangleMesh(HexCell cell, List<HexCellVertexData> vertexBufferList, List<int> indicesList);
+    void AddConnectionMesh(CellConnection connection, List<HexCellVertexData> vertexBufferList, List<int> indicesList);
+    void AddGapTriangleMesh(CellGapTriangle gapTriangle, List<HexCellVertexData> vertexBufferList, List<int> indicesList);
 
-    bool Contains(HexCell cell,Ray ray);
-    bool Contains(HexCell cell,Vector3 point);
+    bool ContainsCell(HexCell cell,Ray ray);
+    
+    bool ContainsConnection(HexCell cell,Ray ray,out CellConnection hitConnection);
+    
+    bool ContainsGapTriangle(HexCell cell,Ray ray,out CellGapTriangle hitGapTriangle);
 }
