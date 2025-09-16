@@ -16,6 +16,10 @@ public abstract class TerrainFeature {
     {   
         cellItem = _cellItem;
     }
+    public virtual void SetCellItem(Cell_Item _cellItem,HexCellAllDirection _direction)
+    {   
+        cellItem = _cellItem;
+    }
 
     public Cell_Item GetCellItem()
     {

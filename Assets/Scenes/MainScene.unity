@@ -730,7 +730,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f7a302df0b4160ad054f3034d79f72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 0}
+  cam: {fileID: 0}
   moveSpeed: 5
   rotateSpeed: 2
 --- !u!1 &983392851
@@ -978,8 +978,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radius: 1
-  hexCellColorEnum: 0
-  height: 0
+  hexCellColorEnum: 1
+  height: 1
+  setTerrainFeature: 0
+  terrainFeatureType: 0
 --- !u!114 &1997507139
 MonoBehaviour:
   m_ObjectHideFlags: 0

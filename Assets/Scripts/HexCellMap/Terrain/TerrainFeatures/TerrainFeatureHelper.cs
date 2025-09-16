@@ -10,28 +10,27 @@ public static class TerrainFeatureHelper
             { TerrainFeatureType.River ,new RiverSelector()}
             
         };
-       
+
+    public static TerrainFeature GetTerrainFeature(TerrainFeatureType terrainFeatureType, CellItemType cellItemType)
+        => FeatureFactories[terrainFeatureType].GetTerrainFeature(cellItemType);
 
     public static void SetTerrainFeature(HexCell cell, TerrainFeatureType terrainFeatureType, Ray ray)
     {
         
         if (cell.ContainsCell(ray))
         {
-            var terrainFeature = FeatureFactories[terrainFeatureType].GetTerrainFeature(CellItemType.HexCell);
-            cell.SetTerrainFeature(terrainFeature);
-            terrainFeature.SetCellItem(cell,ray);
+            cell.SetTerrainFeature(terrainFeatureType);
+            cell.terrainFeature.SetCellItem(cell,ray);
         }
         else if (cell.ContainsConnection(ray, out CellConnection connection))
         {
-            var terrainFeature = FeatureFactories[terrainFeatureType].GetTerrainFeature(CellItemType.Connection);
-            connection.SetTerrainFeature(terrainFeature);
-            terrainFeature.SetCellItem(connection,ray);
+            connection.SetTerrainFeature(terrainFeatureType);
+            connection.terrainFeature.SetCellItem(connection,ray);
         }
         else if (cell.ContainsGapTriangle(ray, out CellGapTriangle gapTriangle))
         {
-            var terrainFeature = FeatureFactories[terrainFeatureType].GetTerrainFeature(CellItemType.GapTriangle);
-            gapTriangle.SetTerrainFeature(terrainFeature);
-            terrainFeature.SetCellItem(gapTriangle,ray);
+            gapTriangle.SetTerrainFeature(terrainFeatureType);
+            gapTriangle.terrainFeature.SetCellItem(gapTriangle,ray);
         }
         
         cell.chunk.SetCellDirty(cell);

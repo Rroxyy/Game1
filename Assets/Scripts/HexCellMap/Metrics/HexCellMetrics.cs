@@ -18,6 +18,23 @@ public enum HexCellDirection
     
 }
 
+public enum HexCellAllDirection
+{
+    Deg0   = 0,  // 正右
+    Deg30  = 1,  // 右下角
+    Deg60  = 2,  // 右下边
+    Deg90  = 3,  // 下右角
+    Deg120 = 4,  // 左下边
+    Deg150 = 5,  // 左下角
+    Deg180 = 6,  // 正左
+    Deg210 = 7,  // 左上角
+    Deg240 = 8,  // 左上边
+    Deg270 = 9,  // 上左角
+    Deg300 = 10, // 右上边
+    Deg330 = 11  // 右上角
+}
+
+
 public static class HexCellMetrics
 {
     public static readonly float outerRadius = 0.8f;
@@ -88,6 +105,28 @@ public static class HexCellMetrics
         ( 0,  1), // LU
         ( 1,  1), // UR
     };
+
+
+    public static List<int> LOD0_P0 = new List<int>() { 0,3,6,9};
+    public static List<int> LOD0_P1 = new List<int>() { 1,12,17};
+    public static List<int> LOD0_P3 = new List<int>() {5,7,22,24,29};
+    public static List<int> LOD0_P8 = new List<int>() {20,21,25};
+
+    #region Direction Transform
+
+    public static HexCellAllDirection ToAllDirection(this HexCellDirection dir)
+    {
+        return (HexCellAllDirection)((int)dir * 2);
+    }
+
+    // HexCellAllDirection -> HexCellDirection
+    public static HexCellDirection ToEdgeDirection(this HexCellAllDirection allDir)
+    {
+        return (HexCellDirection)((int)allDir / 2);
+    }
+
+    #endregion
+    
 
     #region Get Vertex Info
     

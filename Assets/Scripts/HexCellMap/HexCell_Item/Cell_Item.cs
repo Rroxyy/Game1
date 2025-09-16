@@ -15,9 +15,13 @@ public abstract class Cell_Item
     protected int cellMesh_Index;
 
 
-    public virtual void SetTerrainFeature(TerrainFeature _terrainFeature)
+    public virtual void SetTerrainFeature(TerrainFeatureType terrainFeatureType)
     {
-        terrainFeature = _terrainFeature;
+        if (terrainFeature == null||terrainFeature.featureType != terrainFeatureType)
+        {
+            terrainFeature = TerrainFeatureHelper.GetTerrainFeature(terrainFeatureType,itemType);
+        }
+       
     }
 
     public int GetCellMesh_Index()

@@ -10,8 +10,7 @@ public class RiverTerrainFeature_Cell : TerrainFeature
 
     private HexCell cell;
 
-    public static List<int> farIndices = new List<int>(){20,21,25};
-    public static List<int> nearIndices = new List<int>(){20,21,25};
+
 
     public override void SetCellItem(Cell_Item _cellItem, Ray _ray)
     {
@@ -29,22 +28,45 @@ public class RiverTerrainFeature_Cell : TerrainFeature
             if (Triangle.RayInTriangle(_ray, centor, a1, a2, out var t))
             {
                 riverDirections.Add(dir);
+                var connection = cell.GetConnectionByDirection(dir);
+                if (connection != null)
+                {
+                    connection.SetTerrainFeature(TerrainFeatureType.River);
+                    connection.terrainFeature.SetCellItem(connection.BelongsToHexCell,
+                        connection.BelongsToHexCell==cell?HexCellAllDirection.Deg90:HexCellAllDirection.Deg270);
+                }
                 return;
             }
         }
         
     }
 
-    public override void SetFeatureToMesh(
-        List<HexCellVertexData> verticesList,int startIndex)
+    public override void SetFeatureToMesh(List<HexCellVertexData> verticesList,int startIndex)
     {
-        for (int i = 0; i < farIndices.Count; i++)
+        foreach (var dir in riverDirections)
         {
-            int index=startIndex+farIndices[i];
-            var it = verticesList[index];
-            it.pos.y-=HexCellMetrics.heightFactor;
-            verticesList[index]=it;
+            for (int i = 0; i < HexCellMetrics.LOD0_P8.Count; i++)
+            {
+                int index=startIndex+HexCellMetrics.LOD0_P8[i]+36*(int)dir;
+                var it = verticesList[index];
+                it.pos.y = cell.positionWS.y - RiverTerrainMetrics.RiverHeightFactor/2.0f;
+                verticesList[index]=it;
+                
+                HexCellMeshOperate.RebuildNormal(verticesList,index/3);
+            }
+
+            for (int i = 0; i < HexCellMetrics.LOD0_P3.Count; i++)
+            {
+                int index=startIndex+HexCellMetrics.LOD0_P3[i]+36*(int)dir;
+                var it = verticesList[index];
+                it.pos.y = cell.positionWS.y - RiverTerrainMetrics.RiverHeightFactor/4.0f;
+
+                verticesList[index]=it;
+                
+                HexCellMeshOperate.RebuildNormal(verticesList,index/3);
+            }
         }
+        
         
         
     }

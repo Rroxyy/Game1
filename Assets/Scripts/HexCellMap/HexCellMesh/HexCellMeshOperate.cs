@@ -13,13 +13,47 @@ public struct HexCellVertexData
         this.normal = normal;
         this.color = color;
     }
+
+    
 }
 
 
 public static class HexCellMeshOperate
 {
+    #region Rebuild Vertex
+
+    public static void SetVertex(List<HexCellVertexData> verticesBufferList, int vertexIndex, Vector3 pos)
+    {
+        var data = verticesBufferList[vertexIndex];
+        data.pos = pos;
+        verticesBufferList[vertexIndex] = data;
+    }
+
+    #endregion
     
+    #region Rebuild normal
+
+    public static void RebuildNormal(List<HexCellVertexData> verticesBufferList, int triangleIndex)
+    {
+        Vector3 a = verticesBufferList[triangleIndex * 3].pos;
+        Vector3 b = verticesBufferList[triangleIndex * 3 + 1].pos;
+        Vector3 c = verticesBufferList[triangleIndex * 3 + 2].pos;
+        
+        Vector3 normal = Vector3.Cross(b - a, c - a).normalized;
+        
+        SetNormalAt(verticesBufferList, triangleIndex * 3, normal);
+        SetNormalAt(verticesBufferList, triangleIndex * 3 + 1, normal);
+        SetNormalAt(verticesBufferList, triangleIndex * 3 + 2, normal);
+    }
     
+    static void SetNormalAt(List<HexCellVertexData> list, int index, Vector3 normal)
+    {
+        var data = list[index];
+        data.normal = normal;
+        list[index] = data;
+    }
+
+    #endregion
     
     #region AddTriangleSubdivide
 
