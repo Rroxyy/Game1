@@ -41,29 +41,29 @@ public class RiverTerrainFeature_Cell : TerrainFeature
         
     }
 
-    public override void SetFeatureToMesh(List<HexCellVertexData> verticesList,int startIndex)
+    public override void SetFeatureToMesh(List<HexCellVertexData> vertexBufferList,int startIndex)
     {
         foreach (var dir in riverDirections)
         {
             for (int i = 0; i < HexCellMetrics.LOD0_P8.Count; i++)
             {
                 int index=startIndex+HexCellMetrics.LOD0_P8[i]+36*(int)dir;
-                var it = verticesList[index];
+                var it = vertexBufferList[index];
                 it.pos.y = cell.positionWS.y - RiverTerrainMetrics.RiverHeightFactor/2.0f;
-                verticesList[index]=it;
+                vertexBufferList[index]=it;
                 
-                HexCellMeshOperate.RebuildNormal(verticesList,index/3);
+                HexCellMeshOperate.RebuildNormal(vertexBufferList,index/3);
             }
 
             for (int i = 0; i < HexCellMetrics.LOD0_P3.Count; i++)
             {
                 int index=startIndex+HexCellMetrics.LOD0_P3[i]+36*(int)dir;
-                var it = verticesList[index];
+                var it = vertexBufferList[index];
                 it.pos.y = cell.positionWS.y - RiverTerrainMetrics.RiverHeightFactor/4.0f;
 
-                verticesList[index]=it;
+                vertexBufferList[index]=it;
                 
-                HexCellMeshOperate.RebuildNormal(verticesList,index/3);
+                HexCellMeshOperate.RebuildNormal(vertexBufferList,index/3);
             }
         }
         

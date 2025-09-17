@@ -23,20 +23,16 @@ public class RiverTerrainFeature_Connection : TerrainFeature
 
 
     public override void SetFeatureToMesh(
-        List<HexCellVertexData> verticesList,int startIndex)
+        List<HexCellVertexData> vertexBufferList,int startIndex)
     {
-        Vector3 p2 = verticesList[startIndex + CellConnectionMetrics.LOD0_P2[0]].pos;
-        Vector3 p3 = verticesList[startIndex + CellConnectionMetrics.LOD0_P3[0]].pos;
+        var p3 = vertexBufferList[startIndex + 16];
+        vertexBufferList[startIndex + 12] = p3;
 
-        for (int i = 0; i < CellConnectionMetrics.LOD0_P2.Count; i++)
-        {
-            HexCellMeshOperate.SetVertex(verticesList,startIndex + CellConnectionMetrics.LOD0_P2[i],p3);
-        }
+        var p7=vertexBufferList[startIndex + 13];
+        vertexBufferList[startIndex + 15] = p7;
 
-        for (int i = 0; i < CellConnectionMetrics.LOD0_P3.Count; i++)
-        {
-            HexCellMeshOperate.SetVertex(verticesList,startIndex + CellConnectionMetrics.LOD0_P3[i],p2);
-        }
+
+
         // foreach (var direction in connectionDirections)
         // {
         //     switch (direction)
@@ -46,6 +42,6 @@ public class RiverTerrainFeature_Connection : TerrainFeature
         //     }
         // }
         //
-        
+
     }
 }

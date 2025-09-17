@@ -10,7 +10,7 @@ public class RiverTerrainFeature_GapTriangle : TerrainFeature
 
 
     public override void SetFeatureToMesh(
-        List<HexCellVertexData> verticesList,int startIndex)
+        List<HexCellVertexData> vertexBufferList,int startIndex)
     {
         
         

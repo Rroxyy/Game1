@@ -26,6 +26,6 @@ public abstract class TerrainFeature {
         return cellItem;
     }
     
-    public abstract void SetFeatureToMesh(List<HexCellVertexData> verticesList,int startIndex);
+    public abstract void SetFeatureToMesh(List<HexCellVertexData> vertexBufferList,int startIndex);
    
 }

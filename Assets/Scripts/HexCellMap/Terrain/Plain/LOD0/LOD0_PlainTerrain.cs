@@ -21,9 +21,10 @@ public class LOD0_PlainTerrain : ITerrainOperate
     }
 
     public void AddConnectionMesh(CellConnection connection, List<HexCellVertexData> vertexBufferList,
-        List<int> indicesList)
+        List<int> indicesList,int startIndex)
     {
         var cell = connection.BelongsToHexCell;
+        
         connection.GetVertices(out var a2, out var a1, out var b2, out var b1);
         Vector3 normal = Vector3.Cross((b2 - a1), (b1 - a1)).normalized;
 
@@ -33,6 +34,8 @@ public class LOD0_PlainTerrain : ITerrainOperate
             normal,
             vertexBufferList, indicesList
         );
+        
+       
     }
 
     public void AddGapTriangleMesh(CellGapTriangle gapTriangle, List<HexCellVertexData> vertexBufferList,

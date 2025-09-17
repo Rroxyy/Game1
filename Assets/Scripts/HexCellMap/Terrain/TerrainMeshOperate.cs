@@ -24,7 +24,7 @@ public static class TerrainMeshOperate
 
     public static void AddConnectionMesh(CellConnection connection ,List<HexCellVertexData> verticesList,  List<int> indicesList,LOD_Level lodLevel,int startIndex)
     {
-        _groups[connection.BelongsToHexCell.terrainType].GetLOD(lodLevel).AddConnectionMesh(connection, verticesList,indicesList);
+        _groups[connection.BelongsToHexCell.terrainType].GetLOD(lodLevel).AddConnectionMesh(connection, verticesList,indicesList,startIndex);
         connection.terrainFeature?.SetFeatureToMesh(verticesList,startIndex);
 
     }

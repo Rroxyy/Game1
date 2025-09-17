@@ -25,7 +25,7 @@ public class LOD1_PlainTerrain : ITerrainOperate
     }
 
     public void AddConnectionMesh(CellConnection connection, List<HexCellVertexData> vertexBufferList,
-        List<int> indicesList)
+        List<int> indicesList,int startIndex)
     {
         connection.GetVertices(out var a2, out var a1, out var b2, out var b1);
         HexCellMeshOperate.AddQuad(a2, a1, b2, b1,
