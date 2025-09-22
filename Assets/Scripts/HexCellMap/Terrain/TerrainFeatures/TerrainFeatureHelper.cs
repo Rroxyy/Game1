@@ -20,17 +20,17 @@ public static class TerrainFeatureHelper
         if (cell.ContainsCell(ray))
         {
             cell.SetTerrainFeature(terrainFeatureType);
-            cell.terrainFeature.SetCellItem(cell,ray);
+            cell.terrainFeature.AddTerrainFeatureParams(cell,ray);
         }
         else if (cell.ContainsConnection(ray, out CellConnection connection))
         {
             connection.SetTerrainFeature(terrainFeatureType);
-            connection.terrainFeature.SetCellItem(connection,ray);
+            connection.terrainFeature.AddTerrainFeatureParams(connection,ray);
         }
         else if (cell.ContainsGapTriangle(ray, out CellGapTriangle gapTriangle))
         {
             gapTriangle.SetTerrainFeature(terrainFeatureType);
-            gapTriangle.terrainFeature.SetCellItem(gapTriangle,ray);
+            gapTriangle.terrainFeature.AddTerrainFeatureParams(gapTriangle,ray);
         }
         
         cell.chunk.SetCellDirty(cell);

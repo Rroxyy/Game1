@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class RiverTerrainFeature_Cell : TerrainFeature
@@ -12,9 +13,17 @@ public class RiverTerrainFeature_Cell : TerrainFeature
 
 
 
-    public override void SetCellItem(Cell_Item _cellItem, Ray _ray)
+    public override void  AddTerrainFeatureParams(Cell_Item _cellItem,params object[] _params)
     {
-        base.SetCellItem(_cellItem, _ray);
+        base.AddTerrainFeatureParams(_cellItem, _params);
+
+        if (_params is null)
+        {
+            Debug.LogError("RiverTerrainFeature_Cell.SetTerrainFeature: _params is null");
+            return;
+        }
+        
+        Ray _ray = (Ray)_params[0];
         cell = _cellItem as HexCell;
         if (cell == null)
         {
@@ -32,8 +41,13 @@ public class RiverTerrainFeature_Cell : TerrainFeature
                 if (connection != null)
                 {
                     connection.SetTerrainFeature(TerrainFeatureType.River);
-                    connection.terrainFeature.SetCellItem(connection.BelongsToHexCell,
-                        connection.BelongsToHexCell==cell?HexCellAllDirection.Deg90:HexCellAllDirection.Deg270);
+
+                    var dd = dir;
+                    if (!HexCellMetrics.HalfDirections.Contains(dd))
+                    {
+                        dd = HexCellMetrics.GetInverseDirection(dd);
+                    }
+                    connection.terrainFeature.AddTerrainFeatureParams(connection.BelongsToHexCell,dd);
                 }
                 return;
             }
@@ -49,7 +63,7 @@ public class RiverTerrainFeature_Cell : TerrainFeature
             {
                 int index=startIndex+HexCellMetrics.LOD0_P8[i]+36*(int)dir;
                 var it = vertexBufferList[index];
-                it.pos.y = cell.positionWS.y - RiverTerrainMetrics.RiverHeightFactor/2.0f;
+                it.pos.y = GetOuterRiverHeight(dir);
                 vertexBufferList[index]=it;
                 
                 HexCellMeshOperate.RebuildNormal(vertexBufferList,index/3);
@@ -59,7 +73,7 @@ public class RiverTerrainFeature_Cell : TerrainFeature
             {
                 int index=startIndex+HexCellMetrics.LOD0_P3[i]+36*(int)dir;
                 var it = vertexBufferList[index];
-                it.pos.y = cell.positionWS.y - RiverTerrainMetrics.RiverHeightFactor/4.0f;
+                it.pos.y = GetInnerRiverHeight(dir);
 
                 vertexBufferList[index]=it;
                 
@@ -71,5 +85,27 @@ public class RiverTerrainFeature_Cell : TerrainFeature
         
     }
 
+
+    public float GetOuterRiverHeight(HexCellDirection direction)
+    {
+        float height = cell.positionWS.y;
+
+        if (riverDirections.Contains(direction))
+        {
+            height -= RiverTerrainMetrics.RiverHeightFactor;
+        }
+        return height;
+    }
+
+    public float GetInnerRiverHeight(HexCellDirection direction)
+    {
+        float height = cell.positionWS.y;
+
+        if (riverDirections.Contains(direction))
+        {
+            height -= RiverTerrainMetrics.RiverHeightFactor/2.0f;
+        }
+        return height;
+    }
    
 }

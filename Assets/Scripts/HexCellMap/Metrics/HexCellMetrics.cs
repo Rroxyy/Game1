@@ -18,7 +18,7 @@ public enum HexCellDirection
     
 }
 
-public enum HexCellAllDirection
+public enum HexAllDirection
 {
     Deg0   = 0,  // 正右
     Deg30  = 1,  // 右下角
@@ -114,13 +114,13 @@ public static class HexCellMetrics
 
     #region Direction Transform
 
-    public static HexCellAllDirection ToAllDirection(this HexCellDirection dir)
+    public static HexAllDirection ToAllDirection(this HexCellDirection dir)
     {
-        return (HexCellAllDirection)((int)dir * 2);
+        return (HexAllDirection)((int)dir * 2);
     }
 
     // HexCellAllDirection -> HexCellDirection
-    public static HexCellDirection ToEdgeDirection(this HexCellAllDirection allDir)
+    public static HexCellDirection ToEdgeDirection(this HexAllDirection allDir)
     {
         return (HexCellDirection)((int)allDir / 2);
     }
