@@ -2,5 +2,5 @@
 
 public abstract class TerrainFeatureSelector
 {
-    public abstract TerrainFeature GetTerrainFeature(CellItemType cellItemType);
+    public abstract TerrainFeature GetTerrainFeature(Cell_Item item);
 }

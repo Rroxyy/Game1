@@ -30,6 +30,7 @@ public class HexCell : Cell_Item
     public Dictionary<HexCellDirection, CellConnection> cellConnections { get; private set; }
     public Dictionary<HexCellDirection, CellGapTriangle> cellGapTriangles { get; private set; }
 
+
     public HexCell(HexCellCoords hexCellCoords, Vector3 _positionWS, Color color, TerrainData _terrainData)
     {
         this.hexCellCoords = hexCellCoords;
@@ -51,8 +52,6 @@ public class HexCell : Cell_Item
         chunk = _chunk;
     }
 
-
-    
 
     #region Refresh Connection and Gap Triangle
 
@@ -131,8 +130,8 @@ public class HexCell : Cell_Item
 
     public void GetVertexByDirection(HexCellDirection direction, out Vector3 point)
     {
-        HexCellMetrics.GetVertexByDirection(direction, out var p1);
-        point = p1 + positionWS;
+       ;
+        point = HexCellMetrics.GetVertexByDirection(direction) + positionWS;
     }
 
     /// <summary>
@@ -217,7 +216,6 @@ public class HexCell : Cell_Item
 
     #endregion
 
-  
 
     public override string ToString()
     {

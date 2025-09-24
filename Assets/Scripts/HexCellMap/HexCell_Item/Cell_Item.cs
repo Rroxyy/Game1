@@ -19,7 +19,7 @@ public abstract class Cell_Item
     {
         if (terrainFeature == null||terrainFeature.featureType != terrainFeatureType)
         {
-            terrainFeature = TerrainFeatureHelper.GetTerrainFeature(terrainFeatureType,itemType);
+            terrainFeature = TerrainFeatureHelper.GetTerrainFeature(terrainFeatureType,this);
         }
        
     }

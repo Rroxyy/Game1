@@ -11,8 +11,8 @@ public static class TerrainFeatureHelper
             
         };
 
-    public static TerrainFeature GetTerrainFeature(TerrainFeatureType terrainFeatureType, CellItemType cellItemType)
-        => FeatureFactories[terrainFeatureType].GetTerrainFeature(cellItemType);
+    public static TerrainFeature GetTerrainFeature(TerrainFeatureType terrainFeatureType, Cell_Item item)
+        => FeatureFactories[terrainFeatureType].GetTerrainFeature(item);
 
     public static void SetTerrainFeature(HexCell cell, TerrainFeatureType terrainFeatureType, Ray ray)
     {
@@ -20,17 +20,17 @@ public static class TerrainFeatureHelper
         if (cell.ContainsCell(ray))
         {
             cell.SetTerrainFeature(terrainFeatureType);
-            cell.terrainFeature.AddTerrainFeatureParams(cell,ray);
+            cell.terrainFeature.AddTerrainFeatureParams(ray);
         }
         else if (cell.ContainsConnection(ray, out CellConnection connection))
         {
             connection.SetTerrainFeature(terrainFeatureType);
-            connection.terrainFeature.AddTerrainFeatureParams(connection,ray);
+            connection.terrainFeature.AddTerrainFeatureParams(ray);
         }
         else if (cell.ContainsGapTriangle(ray, out CellGapTriangle gapTriangle))
         {
             gapTriangle.SetTerrainFeature(terrainFeatureType);
-            gapTriangle.terrainFeature.AddTerrainFeatureParams(gapTriangle,ray);
+            gapTriangle.terrainFeature.AddTerrainFeatureParams(ray);
         }
         
         cell.chunk.SetCellDirty(cell);

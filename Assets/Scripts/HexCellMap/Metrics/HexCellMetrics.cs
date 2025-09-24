@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 
@@ -130,13 +131,14 @@ public static class HexCellMetrics
 
     #region Get Vertex Info
     
-    public static void GetVertexByDirection(HexCellDirection direction, out Vector3 point)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector3 GetVertexByDirection(HexCellDirection direction)
     {
         int i = (int)direction;
-        point = corners[i];
+        return corners[i];
     }
     
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void GetVertexByDirection(HexCellDirection direction, out Vector3 point1, out Vector3 point2)
     {
         int i = (int)direction;
@@ -148,46 +150,13 @@ public static class HexCellMetrics
 
     #endregion
 
-    #region Collider
-
+    #region aabb
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static AABB GetAABB(Vector3 pos)
     {
         return new AABB(aabb.min + pos, aabb.max + pos);
     }
-
-    public static bool ContainsPoint(Vector3 point)
-    {
-        Vector3[] verts = corners;
-
-        Vector3 normal = Vector3.up;
-
-        bool? inside = null;
-
-        for (int i = 0; i < verts.Length; i++)
-        {
-            Vector3 a = verts[i];
-            Vector3 b = verts[(i + 1) % verts.Length];
-
-            Vector3 ab = b - a;
-            Vector3 ap = point - a;
-
-            Vector3 cross = Vector3.Cross(ab, ap);
-
-            float dot = Vector3.Dot(cross, normal);
-
-            if (i == 0)
-            {
-                inside = dot >= 0;
-            }
-            else
-            {
-                if ((dot >= 0) != inside.Value)
-                    return false;
-            }
-        }
-
-        return true;
-    }
+    
 
     #endregion
     

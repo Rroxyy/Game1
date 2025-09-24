@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class RiverTerrainFeature_Cell : TerrainFeature
 {
+  
+
     public override TerrainFeatureType featureType => TerrainFeatureType.River;
 
     private HexCellDirection riverDirection;
@@ -11,11 +13,13 @@ public class RiverTerrainFeature_Cell : TerrainFeature
 
     private HexCell cell;
 
-
-
-    public override void  AddTerrainFeatureParams(Cell_Item _cellItem,params object[] _params)
+    public RiverTerrainFeature_Cell(Cell_Item _cellItem) : base(_cellItem)
     {
-        base.AddTerrainFeatureParams(_cellItem, _params);
+        cell=_cellItem as HexCell;
+    }
+
+    public override void  AddTerrainFeatureParams(params object[] _params)
+    {
 
         if (_params is null)
         {
@@ -24,7 +28,6 @@ public class RiverTerrainFeature_Cell : TerrainFeature
         }
         
         Ray _ray = (Ray)_params[0];
-        cell = _cellItem as HexCell;
         if (cell == null)
         {
             Debug.LogError("Error: transform to hex cell failed");

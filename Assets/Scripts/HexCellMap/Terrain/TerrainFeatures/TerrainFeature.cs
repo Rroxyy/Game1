@@ -12,18 +12,14 @@ public abstract class TerrainFeature {
     public abstract TerrainFeatureType featureType { get; }
     protected Cell_Item cellItem;
 
-    // public virtual void SetTerrainFeature(Cell_Item _cellItem,Ray _ray)
-    // {   
-    //     cellItem = _cellItem;
-    // }
-    // public virtual void SetTerrainFeature(Cell_Item _cellItem,HexAllDirection _direction)
-    // {   
-    //     cellItem = _cellItem;
-    // }
-    
-    public virtual void AddTerrainFeatureParams(Cell_Item _cellItem,params object[] _params)
-    {   
+    public  TerrainFeature(Cell_Item _cellItem)
+    {
         cellItem = _cellItem;
+    }
+    
+    
+    public virtual void AddTerrainFeatureParams(params object[] _params)
+    {   
     }
     
     public virtual void SetCellItem(Cell_Item _cellItem)
