@@ -23,8 +23,6 @@ public class TerrainEditor : MonoBehaviour
 
 
     private static readonly MeshUpdateFlags TerrainMeshUpdateFlag = MeshUpdateFlags.Default;
-        // MeshUpdateFlags.DontRecalculateBounds |
-        // MeshUpdateFlags.DontValidateIndices;
 
     private void Update()
     {
@@ -57,8 +55,10 @@ public class TerrainEditor : MonoBehaviour
                 List<HexCellVertexData> vertexBufferList = new List<HexCellVertexData>();
                 List<int> indicesList = new List<int>();
                 
-                Plain_LOD0_CellMesh(vertexBufferList, indicesList);
-
+                // Plain_LOD0_CellMesh(vertexBufferList, indicesList);
+                // Plain_LOD0_ConnectionMesh(vertexBufferList, indicesList);
+                Plain_LOD0_GapTriangleMesh(vertexBufferList, indicesList);
+                
                 // === 应用到 Mesh ===
                 terrainMesh.Clear();
 
@@ -82,17 +82,20 @@ public class TerrainEditor : MonoBehaviour
 
     #region Plain Terrain
 
+    /// <summary>
+    /// Plain
+    /// </summary>
+   
     private static void Plain_LOD0_CellMesh(List<HexCellVertexData> vertexBufferList,
         List<int> indicesList)
     {
-        Vector3 positionWS = Vector3.zero;
+       
         foreach (var dir in HexCellMetrics.AllDirections)
         {
             HexCellMeshOperate.AddTriangleSubdivide_AllEdges(
-                positionWS,
+                Vector3.zero,
                 HexCellMetrics.GetVertexByDirection(dir),
                 HexCellMetrics.GetVertexByDirection(HexCellMetrics.GetNextDirection(dir)),
-
                 Color.white, Color.white, Color.white,
                 4, 2,
                 vertexBufferList,
@@ -100,6 +103,37 @@ public class TerrainEditor : MonoBehaviour
             );
         }
     }
+
+    private static void Plain_LOD0_ConnectionMesh(List<HexCellVertexData> vertexBufferList,
+        List<int> indicesList)
+    {
+        HexCellMeshOperate.AddQuadSubdivide_AllEdges(
+            CellConnectionMetrics.ConnectionCorners[0], CellConnectionMetrics.ConnectionCorners[1],
+            CellConnectionMetrics.ConnectionCorners[2], CellConnectionMetrics.ConnectionCorners[3],
+            Color.white, Color.white, Color.white, Color.white,
+            4, 2,
+            Vector3.up,
+            vertexBufferList,indicesList
+        );
+
+    }
+    
+    private static void Plain_LOD0_GapTriangleMesh(List<HexCellVertexData> vertexBufferList,
+        List<int> indicesList)
+    {
+       
+        HexCellMeshOperate.AddTriangleSubdivide_AllEdges(
+            CellGapTriangleMetrics.CellGapTriangleCorners[0], CellGapTriangleMetrics.CellGapTriangleCorners[1],
+            CellGapTriangleMetrics.CellGapTriangleCorners[2],
+            Color.white, Color.white, Color.white,
+            2, 2,
+            vertexBufferList,
+            indicesList
+        );
+
+    }
+    
+    
 
     #endregion
 

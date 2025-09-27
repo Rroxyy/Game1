@@ -100,12 +100,12 @@ public class HexCellMapManager : MonoBehaviour
 
                 
                 //gap
-                posX += HexCellMetrics.GapX*x;
+                posX +=CellConnectionMetrics.GapX*x;
                 if (z % 2 != 0)
                 {
-                    posX+=1.0f*HexCellMetrics.GapX/2f;
+                    posX+=1.0f*CellConnectionMetrics.GapX/2f;
                 }
-                posZ += HexCellMetrics.GapZ*z;
+                posZ += CellConnectionMetrics.GapZ*z;
 
                 Vector3 position = new Vector3(posX, 0f, posZ);
                 HexCell hexCell = new HexCell(new HexCellCoords(x, z), position,HexCellColorManager.instance.GetColor(HexCellColorEnum.White),new PlainTerrainData());

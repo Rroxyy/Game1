@@ -68,8 +68,7 @@ public static class HexCellMetrics
     };
 
 
-    public static readonly float GapX = outerRadius/2.0f;
-    public static readonly float GapZ = GapX / 2 * Mathf.Sqrt(3);
+   
 
     public static readonly AABB aabb = new AABB(new Vector3(-innerRadius, 0, -outerRadius),
         new Vector3(innerRadius, 0, outerRadius));
