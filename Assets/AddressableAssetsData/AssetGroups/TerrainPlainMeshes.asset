@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: TerrainPlainMeshes
+  m_EditorClassIdentifier: 
+  m_GroupName: TerrainPlainMeshes
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 27ce232f6c5bb3d45a7afe435a683e64
+  m_SerializeEntries:
+  - m_GUID: 2000ee99a9234964da2027adb3f21eee
+    m_Address: Plain_LOD0_GapTriangleMesh.mesh
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f705a534e43b814da79e4d1626bcb18
+    m_Address: Plain_LOD0_ConnectionMesh.mesh
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a173cf2b2043bc4428147cb4453243b3
+    m_Address: Plain_LOD0_HexCellMesh.mesh
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 37cdaa98fcb3d8440a1535667848bd34, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 620ca027f41f5a7498dd59b4d618135f, type: 2}
+    - {fileID: 11400000, guid: 38df2c1bee37927438a5447d8a28acce, type: 2}
