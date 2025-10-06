@@ -1,0 +1,22 @@
+ManifestFileVersion: 0
+CRC: 1158133672
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: f4bbce0e171936d07592355387cd8867
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 2edfeee0fffd52782c286e532ff06aef
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: f4bbce0e171936d07592355387cd8867
+HashAppended: 0
+ClassTypes:
+- Class: 43
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Gen/TerrainMesh/PlainMeshes/Plain_LOD0_ConnectionMesh.mesh
+- Assets/Gen/TerrainMesh/PlainMeshes/Plain_LOD0_GapTriangleMesh.mesh
+- Assets/Gen/TerrainMesh/PlainMeshes/Plain_LOD0_HexCellMesh.mesh
+Dependencies: []
