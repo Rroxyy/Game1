@@ -1,114 +1,134 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 public static class ResourceManager
 {
-    private static readonly Dictionary<string, AsyncOperationHandle> loadedAssets = new();
+    // 缓存已加载的 AssetBundle
+    private static Dictionary<string, AssetBundle> loadedBundles = new Dictionary<string, AssetBundle>();
 
     /// <summary>
-    /// 同步加载（阻塞式）
+    /// 同步加载资源（从指定的 AB 包路径中）
     /// </summary>
-    public static T LoadSync<T>(string address) where T : UnityEngine.Object
+    public static T LoadAsset<T>(string bundlePath, string assetName) where T : UnityEngine.Object
     {
-        if (loadedAssets.ContainsKey(address))
-            return (T)loadedAssets[address].Result;
-
-        var handle = Addressables.LoadAssetAsync<T>(address);
-        handle.WaitForCompletion(); // 阻塞直到完成
-        if (handle.Status == AsyncOperationStatus.Succeeded)
+        if (string.IsNullOrEmpty(bundlePath))
         {
-            loadedAssets[address] = handle;
-            return handle.Result;
-        }
-
-        Debug.LogError($"LoadSync 失败: {address}");
-        return null;
-    }
-
-    /// <summary>
-    /// 异步加载（Task）
-    /// </summary>
-    public static async Task<T> LoadAsync<T>(string address) where T : UnityEngine.Object
-    {
-        if (loadedAssets.ContainsKey(address))
-            return (T)loadedAssets[address].Result;
-
-        var handle = Addressables.LoadAssetAsync<T>(address);
-        loadedAssets[address] = handle;
-
-        try
-        {
-            var result = await handle.Task;
-            return result;
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"LoadAsync 失败: {address}, 错误: {e}");
+            Debug.LogError("❌ bundlePath 为空！");
             return null;
         }
+
+        AssetBundle bundle;
+        if (!loadedBundles.TryGetValue(bundlePath, out bundle))
+        {
+            bundle = AssetBundle.LoadFromFile(bundlePath);
+            if (bundle == null)
+            {
+                Debug.LogError($"❌ 无法加载 AB 包: {bundlePath}");
+                return null;
+            }
+            loadedBundles[bundlePath] = bundle;
+        }
+
+        T asset = bundle.LoadAsset<T>(assetName);
+        if (asset == null)
+            Debug.LogError($"⚠️ 未在 {bundlePath} 中找到资源: {assetName}");
+
+        Debug.Log($"Loaded asset: {asset}");
+        return asset;
     }
 
     /// <summary>
-    /// 异步加载（回调）
+    /// 异步加载资源（带回调）
     /// </summary>
-    public static void LoadAsync<T>(string address, Action<T> onLoaded) where T : UnityEngine.Object
+    public static void LoadAssetAsync<T>(string bundlePath, string assetName, Action<T> onLoaded) where T : UnityEngine.Object
     {
-        if (loadedAssets.ContainsKey(address))
+        if (string.IsNullOrEmpty(bundlePath))
         {
-            onLoaded?.Invoke((T)loadedAssets[address].Result);
+            Debug.LogError("❌ bundlePath 为空！");
+            onLoaded?.Invoke(null);
             return;
         }
 
-        var handle = Addressables.LoadAssetAsync<T>(address);
-        loadedAssets[address] = handle;
+        // 启动协程加载
+        CoroutineRunner.Instance.StartCoroutine(LoadAssetAsyncRoutine(bundlePath, assetName, onLoaded));
+    }
 
-        handle.Completed += op =>
+    private static IEnumerator LoadAssetAsyncRoutine<T>(string bundlePath, string assetName, Action<T> onLoaded) where T : UnityEngine.Object
+    {
+        AssetBundle bundle;
+        if (!loadedBundles.TryGetValue(bundlePath, out bundle))
         {
-            if (op.Status == AsyncOperationStatus.Succeeded)
+            var bundleRequest = AssetBundle.LoadFromFileAsync(bundlePath);
+            yield return bundleRequest;
+
+            bundle = bundleRequest.assetBundle;
+            if (bundle == null)
             {
-                onLoaded?.Invoke(op.Result);
-            }
-            else
-            {
-                Debug.LogError($"LoadAsync 回调失败: {address}");
+                Debug.LogError($"❌ 无法加载 AB 包: {bundlePath}");
                 onLoaded?.Invoke(null);
+                yield break;
             }
-        };
+
+            loadedBundles[bundlePath] = bundle;
+        }
+
+        var assetRequest = bundle.LoadAssetAsync<T>(assetName);
+        yield return assetRequest;
+
+        T asset = assetRequest.asset as T;
+        if (asset == null)
+            Debug.LogError($"⚠️ 未在 {bundlePath} 中找到资源: {assetName}");
+
+        onLoaded?.Invoke(asset);
     }
 
     /// <summary>
-    /// 卸载单个资源
+    /// 卸载指定 AB 包
     /// </summary>
-    public static void Unload(string address)
+    public static void UnloadBundle(string bundlePath, bool unloadAllLoadedObjects = false)
     {
-        if (loadedAssets.TryGetValue(address, out var handle))
+        if (loadedBundles.TryGetValue(bundlePath, out var bundle))
         {
-            Addressables.Release(handle);
-            loadedAssets.Remove(address);
+            bundle.Unload(unloadAllLoadedObjects);
+            loadedBundles.Remove(bundlePath);
+            Debug.Log($"🧹 卸载 AB 包: {bundlePath}");
         }
     }
 
     /// <summary>
-    /// 卸载所有已加载资源
+    /// 卸载所有已加载的 AB 包
     /// </summary>
-    public static void UnloadAll()
+    public static void UnloadAll(bool unloadAllLoadedObjects = false)
     {
-        foreach (var kvp in loadedAssets)
+        foreach (var kv in loadedBundles)
         {
-            Addressables.Release(kvp.Value);
+            kv.Value.Unload(unloadAllLoadedObjects);
         }
-        loadedAssets.Clear();
+        loadedBundles.Clear();
+        Debug.Log("🧹 已卸载所有 AB 包");
     }
+}
 
-    /// <summary>
-    /// 查询资源是否已经加载
-    /// </summary>
-    public static bool IsLoaded(string address)
+/// <summary>
+/// 辅助协程运行器（异步加载用）
+/// </summary>
+public class CoroutineRunner : MonoBehaviour
+{
+    private static CoroutineRunner _instance;
+    public static CoroutineRunner Instance
     {
-        return loadedAssets.ContainsKey(address);
+        get
+        {
+            if (_instance == null)
+            {
+                var go = new GameObject("[CoroutineRunner]");
+                GameObject.DontDestroyOnLoad(go);
+                _instance = go.AddComponent<CoroutineRunner>();
+            }
+            return _instance;
+        }
     }
 }

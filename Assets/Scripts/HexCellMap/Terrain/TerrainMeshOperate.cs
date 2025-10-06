@@ -49,6 +49,9 @@ public static class TerrainMeshOperate
     {
         return _groups[cell.terrainType].GetLOD(lodLevel).ContainsGapTriangle(cell, ray, out hitGapTriangle);
     }
+    
+    
+  
 
    
 }

@@ -21,9 +21,17 @@ public enum LOD_Level
     LOD2,
 }
 
+public enum HexSection
+{
+    HexCell,
+    Connection,
+    GapTriangle
+}
+
 
 public abstract class TerrainData
 {
     public abstract TerrainType terrainType { get; }
 
 }
+

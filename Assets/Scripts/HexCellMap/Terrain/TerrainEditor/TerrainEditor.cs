@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class TerrainEditor : MonoBehaviour
 {
-    [Header("Generate Terrain Mesh")] [SerializeField]
-    private bool showTerrainMesh = false;
+    [Header("Generate Terrain Mesh")]
+    [SerializeField] private bool showTerrainMesh = false;
 
     [SerializeField] private bool generateTerrainMesh = false;
 
-    [Header("Save")] [SerializeField] [TextArea]
-    private string meshName = "";
+    [Header("Save")] 
+    [SerializeField] [TextArea] private string meshName = "";
 
     private readonly static string path = "Assets/Gen/TerrainMesh/Temp";
 
@@ -80,14 +81,10 @@ public class TerrainEditor : MonoBehaviour
         if (loadTest)
         {
             loadTest = false;
-            ResourceManager.LoadAsync<Mesh>(HexCellMeshPathConf.Plain_LOD0_HexCellMeshPath,
-                (mesh =>
-                {
-                    Debug.Log(mesh.name);
-                    terrainMesh = mesh;
-                    meshFilter.sharedMesh = terrainMesh;
-                    Debug.Log(meshFilter.sharedMesh.vertices.Length);
-                }));
+            string abName=GetTerrainAbName(TerrainType.Plain, LOD_Level.LOD0, HexSection.Connection);
+            string path = Path.Combine(ResourceData.TerrainAbPath , nameof(TerrainType.Plain));
+            terrainMesh=ResourceManager.LoadAsset<Mesh>(path, abName);
+            meshFilter.sharedMesh = terrainMesh;
             
         }
     }
@@ -163,4 +160,11 @@ public class TerrainEditor : MonoBehaviour
     }
 
     #endregion
+    
+    //Asset Bundles
+    public static string GetTerrainAbName(TerrainType type, LOD_Level lodLevel, HexSection section)
+    {
+        return $"{type}_{lodLevel}_{section}Mesh.mesh";
+    }
+
 }

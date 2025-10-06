@@ -154,6 +154,7 @@ MonoBehaviour:
   showTerrainMesh: 0
   generateTerrainMesh: 0
   meshName: Plain_LOD0_Connection
+  loadTest: 0
   terrainMaterial: {fileID: 2100000, guid: b3859a215181bc74d8a36a69397f21ff, type: 2}
 --- !u!4 &738822076
 Transform:
@@ -164,7 +165,7 @@ Transform:
   m_GameObject: {fileID: 738822074}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -15.539918, y: -55.272312, z: 64.70978}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
