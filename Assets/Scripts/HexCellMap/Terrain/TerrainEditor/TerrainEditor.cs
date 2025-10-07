@@ -5,22 +5,31 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+#if UNITY_EDITOR
+
 public class TerrainEditor : MonoBehaviour
 {
-    [Header("Generate Terrain Mesh")]
-    [SerializeField] private bool showTerrainMesh = false;
+    [Header("Generate Terrain Mesh")] [SerializeField]
+    private bool showTerrainMesh = false;
 
-    [SerializeField] private bool generateTerrainMesh = false;
+    [Header("Save Temp(Test)")] [SerializeField]
+    private bool generateTerrainMesh = false;
 
-    [Header("Save")] 
-    [SerializeField] [TextArea] private string meshName = "";
+    [SerializeField] [TextArea] string tempName = "TestMesh";
 
-    private readonly static string path = "Assets/Gen/TerrainMesh/Temp";
+    [Header("Regenerate All Terrain Mesh")] [SerializeField]
+    private bool regenerateAllTerrainMesh = false;
 
-    [Header("Load")] [SerializeField] private bool loadTest = false;
+    [Header("Load Terrain Mesh")] [SerializeField]
+    private bool loadTest = false;
 
 
-    [Space] [SerializeField] private Material terrainMaterial;
+    private readonly static string generateMeshPath = "Assets/Gen/TerrainMesh/PlainMeshes";
+    private readonly static string tempPath = "Assets/Gen/TerrainMesh/Temp";
+
+
+    [Header("Base")] [Space] [SerializeField]
+    private Material terrainMaterial;
 
 
     private Mesh terrainMesh;
@@ -38,7 +47,7 @@ public class TerrainEditor : MonoBehaviour
         go.transform.SetParent(transform, false);
 
         meshFilter = go.AddComponent<MeshFilter>();
-        terrainMesh = new Mesh { name = meshName.Length == 0 ? "TerrainMesh" : meshName };
+        terrainMesh = new Mesh { name = tempName };
         meshFilter.sharedMesh = terrainMesh;
 
         meshRenderer = go.AddComponent<MeshRenderer>();
@@ -47,6 +56,25 @@ public class TerrainEditor : MonoBehaviour
 
     private void Update()
     {
+        if (regenerateAllTerrainMesh)
+        {
+            FileHelper.ClearFolder(generateMeshPath);
+            regenerateAllTerrainMesh = false;
+            
+
+            foreach (var it in TerrainMeshFactory.buildActions)
+            {
+                Mesh tempMesh = new Mesh();
+                List<HexCellVertexData> vertexBufferList = new List<HexCellVertexData>();
+                List<int> indicesList = new List<int>();
+                string savePath = Path.Combine(generateMeshPath, it.Key.GetMeshAssetName());
+                it.Value.Invoke(vertexBufferList, indicesList);
+                UpdateTerrainMesh(tempMesh, vertexBufferList, indicesList);
+                tempMesh.name = it.Key.GetMeshName();
+                FileHelper.SaveAsset(tempMesh, savePath);
+            }
+
+        }
         if (generateTerrainMesh)
         {
             generateTerrainMesh = false;
@@ -58,113 +86,64 @@ public class TerrainEditor : MonoBehaviour
                 Debug.LogWarning("No terrain mesh");
                 return;
             }
+
             terrainMesh.tangents = null;
-            MeshExporter.SaveMeshAsOBJ(terrainMesh, path);
+            var savePath = Path.Combine(tempPath, terrainMesh.name + ".mesh");
+            FileHelper.SaveAsset(terrainMesh, savePath);
         }
 
         if (showTerrainMesh)
         {
             showTerrainMesh = false;
 
-
+            terrainMesh.name = tempName;
             List<HexCellVertexData> vertexBufferList = new List<HexCellVertexData>();
             List<int> indicesList = new List<int>();
 
-            // Plain_LOD0_CellMesh(vertexBufferList, indicesList);
-            // Plain_LOD0_ConnectionMesh(vertexBufferList, indicesList);
-            Plain_LOD0_GapTriangleMesh(vertexBufferList, indicesList);
 
+            PlainBuildMethod.Plain_LOD1_CellBodyMesh(vertexBufferList, indicesList);
 
-            UpdateTerrainMesh(vertexBufferList, indicesList);
+            UpdateTerrainMesh(terrainMesh,vertexBufferList, indicesList);
         }
 
         if (loadTest)
         {
             loadTest = false;
-            string abName=GetTerrainAbName(TerrainType.Plain, LOD_Level.LOD0, HexSection.Connection);
-            string path = Path.Combine(ResourceData.TerrainAbPath , nameof(TerrainType.Plain));
-            terrainMesh=ResourceManager.LoadAsset<Mesh>(path, abName);
+            string abName = GetTerrainAbName(TerrainType.Plain, LOD_Level.LOD0, CellPart.CellConnection);
+            string path = Path.Combine(ResourceData.TerrainAbPath, nameof(TerrainType.Plain));
+            terrainMesh = ResourceManager.LoadAsset<Mesh>(path, abName);
             meshFilter.sharedMesh = terrainMesh;
-            
         }
     }
 
-    private void UpdateTerrainMesh(List<HexCellVertexData> vertexBufferList, List<int> indicesList)
+    private void UpdateTerrainMesh(Mesh mesh,List<HexCellVertexData> vertexBufferList, List<int> indicesList)
     {
         // === 应用到 Mesh ===
-        terrainMesh.Clear();
+        mesh.Clear();
 
-        terrainMesh.SetVertexBufferParams(vertexBufferList.Count,
+        mesh.SetVertexBufferParams(vertexBufferList.Count,
             new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
             new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.Float32, 3),
             new VertexAttributeDescriptor(VertexAttribute.Color, VertexAttributeFormat.UNorm8, 4)
         );
 
-        terrainMesh.SetVertexBufferData(vertexBufferList, 0, 0, vertexBufferList.Count, 0, TerrainMeshUpdateFlag);
+        mesh.SetVertexBufferData(vertexBufferList, 0, 0, vertexBufferList.Count, 0, TerrainMeshUpdateFlag);
 
-        terrainMesh.SetIndexBufferParams(indicesList.Count, IndexFormat.UInt32);
-        terrainMesh.SetIndexBufferData(indicesList, 0, 0, indicesList.Count, TerrainMeshUpdateFlag);
+        mesh.SetIndexBufferParams(indicesList.Count, IndexFormat.UInt32);
+        mesh.SetIndexBufferData(indicesList, 0, 0, indicesList.Count, TerrainMeshUpdateFlag);
 
-        terrainMesh.SetSubMesh(0, new SubMeshDescriptor(0, indicesList.Count, MeshTopology.Triangles),
+        mesh.SetSubMesh(0, new SubMeshDescriptor(0, indicesList.Count, MeshTopology.Triangles),
             TerrainMeshUpdateFlag);
 
-        terrainMesh.RecalculateBounds();
+        mesh.RecalculateBounds();
     }
 
-    #region Plain Terrain
 
-    /// <summary>
-    /// Plain
-    /// </summary>
-    private static void Plain_LOD0_CellMesh(List<HexCellVertexData> vertexBufferList,
-        List<int> indicesList)
-    {
-        foreach (var dir in HexCellMetrics.AllDirections)
-        {
-            HexCellMeshOperate.AddTriangleSubdivide_AllEdges(
-                Vector3.zero,
-                HexCellMetrics.GetVertexByDirection(dir),
-                HexCellMetrics.GetVertexByDirection(HexCellMetrics.GetNextDirection(dir)),
-                Color.white, Color.white, Color.white,
-                4, 2,
-                vertexBufferList,
-                indicesList
-            );
-        }
-    }
-
-    private static void Plain_LOD0_ConnectionMesh(List<HexCellVertexData> vertexBufferList,
-        List<int> indicesList)
-    {
-        HexCellMeshOperate.AddQuadSubdivide_AllEdges(
-            CellConnectionMetrics.ConnectionCorners[0], CellConnectionMetrics.ConnectionCorners[1],
-            CellConnectionMetrics.ConnectionCorners[2], CellConnectionMetrics.ConnectionCorners[3],
-            Color.white, Color.white, Color.white, Color.white,
-            4, 2,
-            Vector3.up,
-            vertexBufferList, indicesList
-        );
-    }
-
-    private static void Plain_LOD0_GapTriangleMesh(List<HexCellVertexData> vertexBufferList,
-        List<int> indicesList)
-    {
-        HexCellMeshOperate.AddTriangleSubdivide_AllEdges(
-            CellGapTriangleMetrics.CellGapTriangleCorners[0], CellGapTriangleMetrics.CellGapTriangleCorners[1],
-            CellGapTriangleMetrics.CellGapTriangleCorners[2],
-            Color.white, Color.white, Color.white,
-            2, 2,
-            vertexBufferList,
-            indicesList
-        );
-    }
-
-    #endregion
-    
     //Asset Bundles
-    public static string GetTerrainAbName(TerrainType type, LOD_Level lodLevel, HexSection section)
+    public static string GetTerrainAbName(TerrainType type, LOD_Level lodLevel, CellPart section)
     {
         return $"{type}_{lodLevel}_{section}Mesh.mesh";
     }
-
 }
+
+#endif

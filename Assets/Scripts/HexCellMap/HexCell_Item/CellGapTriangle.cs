@@ -8,23 +8,23 @@ public class CellGapTriangle : Cell_Item
     public HexCell preDirectionCell { get; private set; }
     public HexCell directionCell { get; private set; }
 
-    private HexCellDirection direction;
+    private CellBodyDirection _bodyDirection;
 
     public CellGapTriangle(HexCell _belongToCell, HexCell _preDirectionCell, HexCell _directionCell,
-        HexCellDirection _direction)
+        CellBodyDirection bodyDirection)
     {
         this.belongToCell = _belongToCell;
         this.preDirectionCell = _preDirectionCell;
         this.directionCell = _directionCell;
-        this.direction = _direction;
+        this._bodyDirection = bodyDirection;
     }
 
 
     public void GetVertices(out Vector3 a, out Vector3 b, out Vector3 c)
     {
-        belongToCell.GetVertexByDirection(direction, out a);
+        belongToCell.GetVertexByDirection(_bodyDirection, out a);
 
-        var tempDir = HexCellMetrics.GetPrevioustDirection(direction);
+        var tempDir = HexCellMetrics.GetPrevioustDirection(_bodyDirection);
         tempDir = HexCellMetrics.GetInverseDirection(tempDir);
         preDirectionCell.GetVertexByDirection(tempDir, out b);
 

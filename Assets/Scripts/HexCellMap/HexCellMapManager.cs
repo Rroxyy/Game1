@@ -181,7 +181,7 @@ public class HexCellMapManager : MonoBehaviour
     }
     
     //只取周围一格
-    public void GetCellNeighbors(HexCell center, ref List<HexCell> neighbors,ref List<HexCellDirection> directions) 
+    public void GetCellNeighbors(HexCell center, ref List<HexCell> neighbors,ref List<CellBodyDirection> directions) 
     {
         foreach (var dir in HexCellMetrics.AllDirections)
         {
@@ -195,9 +195,9 @@ public class HexCellMapManager : MonoBehaviour
         }
     }
 
-    public HexCell GetCellNeighbors(HexCell center, HexCellDirection direction)
+    public HexCell GetCellNeighbors(HexCell center, CellBodyDirection bodyDirection)
     {
-        var coord=HexCellMetrics.GetHexCellNeighborCoords(center, direction);
+        var coord=HexCellMetrics.GetHexCellNeighborCoords(center, bodyDirection);
         if (hexCellsMap.TryGetValue(coord, out HexCell neighbor))
         {
             return neighbor;

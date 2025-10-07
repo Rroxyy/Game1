@@ -8,7 +8,7 @@ public class RiverTerrainFeature_Connection : TerrainFeature
     public override TerrainFeatureType featureType => TerrainFeatureType.River;
 
     private CellConnection connection;
-    private HashSet<HexAllDirection> riverDirections = new HashSet<HexAllDirection>();
+    private HashSet<CellAllDirection> riverDirections = new HashSet<CellAllDirection>();
 
     
     public RiverTerrainFeature_Connection(Cell_Item _cellItem) : base(_cellItem)
@@ -19,9 +19,9 @@ public class RiverTerrainFeature_Connection : TerrainFeature
     
     public override void AddTerrainFeatureParams(params object[] _params)
     {
-        if (_params[0]?.GetType() == typeof(HexAllDirection))
+        if (_params[0]?.GetType() == typeof(CellAllDirection))
         {
-            riverDirections.Add((HexAllDirection)_params[0]);
+            riverDirections.Add((CellAllDirection)_params[0]);
         }
         else if (_params[0]?.GetType() == typeof(Ray))
         {
@@ -32,15 +32,15 @@ public class RiverTerrainFeature_Connection : TerrainFeature
             var midA=(a1+a2)/2;
             
             var ray=(Ray)_params[0];
-            if (!riverDirections.Contains(HexAllDirection.Deg180)&&
+            if (!riverDirections.Contains(CellAllDirection.Deg180)&&
                 Quad.RayInQuad(ray, midA, a1, b2, midB, out var _))
             {
-                riverDirections.Add(HexAllDirection.Deg180);
+                riverDirections.Add(CellAllDirection.Deg180);
             }
-            else if (!riverDirections.Contains(HexAllDirection.Deg0) &&
+            else if (!riverDirections.Contains(CellAllDirection.Deg0) &&
                      Quad.RayInQuad(ray,a2,midA,midB,b1, out var _))
             {
-                riverDirections.Add(HexAllDirection.Deg0);
+                riverDirections.Add(CellAllDirection.Deg0);
             }
         }
     }
@@ -69,29 +69,29 @@ public class RiverTerrainFeature_Connection : TerrainFeature
        
     }
 
-    private void SetRiverByDirection(HexAllDirection direction, List<HexCellVertexData> vertexBufferList,
+    private void SetRiverByDirection(CellAllDirection direction, List<HexCellVertexData> vertexBufferList,
         int startIndex)
     {
-        if (direction == HexAllDirection.Deg90)
+        if (direction == CellAllDirection.Deg90)
         {
             var cellRiver = connection.BelongsToHexCell.terrainFeature as RiverTerrainFeature_Cell;
             if (cellRiver != null)
             {
-                SetVertexHeight(vertexBufferList,startIndex+10,cellRiver.GetOuterRiverHeight(connection.direction));
-                SetVertexHeight(vertexBufferList,startIndex+17,cellRiver.GetOuterRiverHeight(connection.direction));
+                SetVertexHeight(vertexBufferList,startIndex+10,cellRiver.GetOuterRiverHeight(connection.bodyDirection));
+                SetVertexHeight(vertexBufferList,startIndex+17,cellRiver.GetOuterRiverHeight(connection.bodyDirection));
             }
         }
-        else if (direction == HexAllDirection.Deg270)
+        else if (direction == CellAllDirection.Deg270)
         {
             var otherRiver= connection.OtherHexCell.terrainFeature as RiverTerrainFeature_Cell;
-            var inDir = HexCellMetrics.GetInverseDirection(connection.direction);
+            var inDir = HexCellMetrics.GetInverseDirection(connection.bodyDirection);
             if (otherRiver != null)
             {
                 SetVertexHeight(vertexBufferList,startIndex+32,otherRiver.GetOuterRiverHeight(inDir));
                 SetVertexHeight(vertexBufferList,startIndex+37,otherRiver.GetOuterRiverHeight(inDir));
             }
         }
-        else if (direction == HexAllDirection.Deg0)
+        else if (direction == CellAllDirection.Deg0)
         {
             
         }

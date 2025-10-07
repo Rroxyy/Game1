@@ -7,19 +7,19 @@ public class CellConnection: Cell_Item
 
     public HexCell BelongsToHexCell{get;private set;}
     public HexCell OtherHexCell{get;private set;}
-    public HexCellDirection direction { get;private set; }
+    public CellBodyDirection bodyDirection { get;private set; }
 
-    public CellConnection(HexCell _BelongsToHexCell, HexCell _OtherHexCell,HexCellDirection _dir)
+    public CellConnection(HexCell _BelongsToHexCell, HexCell _OtherHexCell,CellBodyDirection _dir)
     {
         BelongsToHexCell = _BelongsToHexCell;
         OtherHexCell = _OtherHexCell;
-        direction = _dir;
+        bodyDirection = _dir;
     }
 
     public void GetVertices(out Vector3 a2,out Vector3 a1,  out Vector3 b2, out Vector3 b1)
     {
-        BelongsToHexCell.GetVertexByDirection(direction, out  a1, out a2);
-        OtherHexCell.GetVertexByDirection(HexCellMetrics.GetInverseDirection(direction), out  b1, out b2);
+        BelongsToHexCell.GetVertexByDirection(bodyDirection, out  a1, out a2);
+        OtherHexCell.GetVertexByDirection(HexCellMetrics.GetInverseDirection(bodyDirection), out  b1, out b2);
        
     }
 

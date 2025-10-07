@@ -15,12 +15,12 @@ public static class CellConnectionMetrics
     public static readonly float ConnectionHeight = GapX;
     public static readonly float ConnectionWidth = HexCellMetrics.outerRadius;
 
-    public static readonly List<HexAllDirection> connectionDirections = new List<HexAllDirection>()
+    public static readonly List<CellAllDirection> connectionDirections = new List<CellAllDirection>()
     {
-        HexAllDirection.Deg0,       //Right
-        HexAllDirection.Deg90,      //Down
-        HexAllDirection.Deg180,     //Left
-        HexAllDirection.Deg270,     //Up
+        CellAllDirection.Deg0,       //Right
+        CellAllDirection.Deg90,      //Down
+        CellAllDirection.Deg180,     //Left
+        CellAllDirection.Deg270,     //Up
     };
 
     public static readonly List<Vector3> ConnectionCorners = new List<Vector3>()

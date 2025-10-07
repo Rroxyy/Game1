@@ -3,37 +3,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 
 
-/////////////////////////
-///		LU		UR    ///
-/// L				R ///
-///		DL		RD    ///
-/////////////////////////
-public enum HexCellDirection
-{
-    R,
-    RD,
-    DL,
-    L,
-    LU,
-    UR,
-    
-}
 
-public enum HexAllDirection
-{
-    Deg0   = 0,  // 正右
-    Deg30  = 1,  // 右下角
-    Deg60  = 2,  // 右下边
-    Deg90  = 3,  // 下右角
-    Deg120 = 4,  // 左下边
-    Deg150 = 5,  // 左下角
-    Deg180 = 6,  // 正左
-    Deg210 = 7,  // 左上角
-    Deg240 = 8,  // 左上边
-    Deg270 = 9,  // 上左角
-    Deg300 = 10, // 右上边
-    Deg330 = 11  // 右上角
-}
 
 
 public static class HexCellMetrics
@@ -43,28 +13,28 @@ public static class HexCellMetrics
 
     public static readonly float heightFactor = 0.3f;
 
-    public static readonly HexCellDirection[] AllDirections =
+    public static readonly CellBodyDirection[] AllDirections =
     {
-        HexCellDirection.R,
-        HexCellDirection.RD,
-        HexCellDirection.DL,
-        HexCellDirection.L,
-        HexCellDirection.LU,
-        HexCellDirection.UR
+        CellBodyDirection.R,
+        CellBodyDirection.RD,
+        CellBodyDirection.DL,
+        CellBodyDirection.L,
+        CellBodyDirection.LU,
+        CellBodyDirection.UR
     };
     
-    public static readonly HexCellDirection[] HalfDirections =
+    public static readonly CellBodyDirection[] HalfDirections =
     {
-        HexCellDirection.LU,
-        HexCellDirection.UR,
-        HexCellDirection.R,
+        CellBodyDirection.LU,
+        CellBodyDirection.UR,
+        CellBodyDirection.R,
     };
     
-    public static readonly HexCellDirection[] HalfInverseDirections =
+    public static readonly CellBodyDirection[] HalfInverseDirections =
     {
-        HexCellDirection.RD,
-        HexCellDirection.DL,
-        HexCellDirection.L,
+        CellBodyDirection.RD,
+        CellBodyDirection.DL,
+        CellBodyDirection.L,
     };
 
 
@@ -114,15 +84,15 @@ public static class HexCellMetrics
 
     #region Direction Transform
 
-    public static HexAllDirection ToAllDirection(this HexCellDirection dir)
+    public static CellAllDirection ToAllDirection(this CellBodyDirection dir)
     {
-        return (HexAllDirection)((int)dir * 2);
+        return (CellAllDirection)((int)dir * 2);
     }
 
     // HexCellAllDirection -> HexCellDirection
-    public static HexCellDirection ToEdgeDirection(this HexAllDirection allDir)
+    public static CellBodyDirection ToEdgeDirection(this CellAllDirection allDir)
     {
-        return (HexCellDirection)((int)allDir / 2);
+        return (CellBodyDirection)((int)allDir / 2);
     }
 
     #endregion
@@ -131,16 +101,16 @@ public static class HexCellMetrics
     #region Get Vertex Info
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector3 GetVertexByDirection(HexCellDirection direction)
+    public static Vector3 GetVertexByDirection(CellBodyDirection bodyDirection)
     {
-        int i = (int)direction;
+        int i = (int)bodyDirection;
         return corners[i];
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void GetVertexByDirection(HexCellDirection direction, out Vector3 point1, out Vector3 point2)
+    public static void GetVertexByDirection(CellBodyDirection bodyDirection, out Vector3 point1, out Vector3 point2)
     {
-        int i = (int)direction;
+        int i = (int)bodyDirection;
         int j = (i + 1) % 6; 
         point1 = corners[i];
         point2 = corners[j];
@@ -162,23 +132,23 @@ public static class HexCellMetrics
 
     #region Get Neighbors Info
 
-    public static HexCellDirection GetNextDirection(HexCellDirection direction)
+    public static CellBodyDirection GetNextDirection(CellBodyDirection bodyDirection)
     {
-        return (HexCellDirection)(((int)direction + 1) % 6);
+        return (CellBodyDirection)(((int)bodyDirection + 1) % 6);
     }
     
-    public static HexCellDirection GetPrevioustDirection(HexCellDirection direction)
+    public static CellBodyDirection GetPrevioustDirection(CellBodyDirection bodyDirection)
     {
-        return (HexCellDirection)(((int)direction +5) % 6);
+        return (CellBodyDirection)(((int)bodyDirection +5) % 6);
     }
 
-    public static HexCellDirection GetInverseDirection(HexCellDirection direction)
+    public static CellBodyDirection GetInverseDirection(CellBodyDirection bodyDirection)
     {
-        return (HexCellDirection)(((int)direction + 3) % 6);
+        return (CellBodyDirection)(((int)bodyDirection + 3) % 6);
     }
 
 
-    public static bool TryGetNeighborDirection(HexCell a, HexCell b, out HexCellDirection dir)
+    public static bool TryGetNeighborDirection(HexCell a, HexCell b, out CellBodyDirection dir)
     {
         var (ax, ay, az) = OffsetToCube(a.hexCellCoords);
         var (bx, by, bz) = OffsetToCube(b.hexCellCoords);
@@ -187,12 +157,12 @@ public static class HexCellMetrics
         int dy = by - ay;
         int dz = bz - az;
 
-        if (dx == 1 && dy == -1 && dz == 0) { dir = HexCellDirection.R; return true; }
-        if (dx == 1 && dy == 0 && dz == -1) { dir = HexCellDirection.RD; return true; }
-        if (dx == 0 && dy == 1 && dz == -1) { dir = HexCellDirection.DL; return true; }
-        if (dx == -1 && dy == 1 && dz == 0) { dir = HexCellDirection.L; return true; }
-        if (dx == -1 && dy == 0 && dz == 1) { dir = HexCellDirection.LU; return true; }
-        if (dx == 0 && dy == -1 && dz == 1) { dir = HexCellDirection.UR; return true; }
+        if (dx == 1 && dy == -1 && dz == 0) { dir = CellBodyDirection.R; return true; }
+        if (dx == 1 && dy == 0 && dz == -1) { dir = CellBodyDirection.RD; return true; }
+        if (dx == 0 && dy == 1 && dz == -1) { dir = CellBodyDirection.DL; return true; }
+        if (dx == -1 && dy == 1 && dz == 0) { dir = CellBodyDirection.L; return true; }
+        if (dx == -1 && dy == 0 && dz == 1) { dir = CellBodyDirection.LU; return true; }
+        if (dx == 0 && dy == -1 && dz == 1) { dir = CellBodyDirection.UR; return true; }
 
         dir = default;
         return false;
@@ -200,18 +170,18 @@ public static class HexCellMetrics
 
 
 
-    public static HexCellCoords GetHexCellNeighborCoords(HexCell cell, HexCellDirection direction)
+    public static HexCellCoords GetHexCellNeighborCoords(HexCell cell, CellBodyDirection bodyDirection)
     {
         HexCellCoords coords = cell.hexCellCoords;
         var offsets = (coords.z & 1) == 0 ? evenRowOffsets : oddRowOffsets;
 
-        var (dx, dz) = offsets[(int)direction];
+        var (dx, dz) = offsets[(int)bodyDirection];
         return new HexCellCoords(coords.x + dx, coords.z + dz);
     }
     
-    public static HexCellDirection NextDirection(HexCellDirection dir)
+    public static CellBodyDirection NextDirection(CellBodyDirection dir)
     {
-        return (HexCellDirection)(((int)dir + 1) % 6);
+        return (CellBodyDirection)(((int)dir + 1) % 6);
     }
 
     

@@ -6,7 +6,7 @@ public class RiverTerrainFeature_GapTriangle : TerrainFeature
 
     public override TerrainFeatureType featureType => TerrainFeatureType.River;
 
-    private HexCellDirection riverDirection;
+    private CellBodyDirection _riverBodyDirection;
 
     public RiverTerrainFeature_GapTriangle(Cell_Item _cellItem) : base(_cellItem)
     {

@@ -8,8 +8,8 @@ public class RiverTerrainFeature_Cell : TerrainFeature
 
     public override TerrainFeatureType featureType => TerrainFeatureType.River;
 
-    private HexCellDirection riverDirection;
-    private HashSet<HexCellDirection> riverDirections = new HashSet<HexCellDirection>(); 
+    private CellBodyDirection _riverBodyDirection;
+    private HashSet<CellBodyDirection> riverDirections = new HashSet<CellBodyDirection>(); 
 
     private HexCell cell;
 
@@ -89,22 +89,22 @@ public class RiverTerrainFeature_Cell : TerrainFeature
     }
 
 
-    public float GetOuterRiverHeight(HexCellDirection direction)
+    public float GetOuterRiverHeight(CellBodyDirection bodyDirection)
     {
         float height = cell.positionWS.y;
 
-        if (riverDirections.Contains(direction))
+        if (riverDirections.Contains(bodyDirection))
         {
             height -= RiverTerrainMetrics.RiverHeightFactor;
         }
         return height;
     }
 
-    public float GetInnerRiverHeight(HexCellDirection direction)
+    public float GetInnerRiverHeight(CellBodyDirection bodyDirection)
     {
         float height = cell.positionWS.y;
 
-        if (riverDirections.Contains(direction))
+        if (riverDirections.Contains(bodyDirection))
         {
             height -= RiverTerrainMetrics.RiverHeightFactor/2.0f;
         }

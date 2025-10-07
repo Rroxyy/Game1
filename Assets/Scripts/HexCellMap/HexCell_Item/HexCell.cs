@@ -27,8 +27,8 @@ public class HexCell : Cell_Item
 
     public HexCellChunk chunk { get; private set; }
 
-    public Dictionary<HexCellDirection, CellConnection> cellConnections { get; private set; }
-    public Dictionary<HexCellDirection, CellGapTriangle> cellGapTriangles { get; private set; }
+    public Dictionary<CellBodyDirection, CellConnection> cellConnections { get; private set; }
+    public Dictionary<CellBodyDirection, CellGapTriangle> cellGapTriangles { get; private set; }
 
 
     public HexCell(HexCellCoords hexCellCoords, Vector3 _positionWS, Color color, TerrainData _terrainData)
@@ -41,8 +41,8 @@ public class HexCell : Cell_Item
 
         terrainData = _terrainData;
 
-        cellConnections = new Dictionary<HexCellDirection, CellConnection>();
-        cellGapTriangles = new Dictionary<HexCellDirection, CellGapTriangle>();
+        cellConnections = new Dictionary<CellBodyDirection, CellConnection>();
+        cellGapTriangles = new Dictionary<CellBodyDirection, CellGapTriangle>();
 
         hexCellCollider = new HexCellCollider(this);
     }
@@ -74,7 +74,7 @@ public class HexCell : Cell_Item
         }
     }
 
-    public void RefreshCTbyDir(HexCellDirection dir)
+    public void RefreshCTbyDir(CellBodyDirection dir)
     {
         var neighbor = HexCellMapManager.instance.GetCellNeighbors(this, dir);
         if (neighbor == null) return;
@@ -128,59 +128,59 @@ public class HexCell : Cell_Item
 
     #region Get Info
 
-    public void GetVertexByDirection(HexCellDirection direction, out Vector3 point)
+    public void GetVertexByDirection(CellBodyDirection bodyDirection, out Vector3 point)
     {
        ;
-        point = HexCellMetrics.GetVertexByDirection(direction) + positionWS;
+        point = HexCellMetrics.GetVertexByDirection(bodyDirection) + positionWS;
     }
 
     /// <summary>
     /// 顺时针返回point
     /// </summary>
-    public void GetVertexByDirection(HexCellDirection direction, out Vector3 point1, out Vector3 point2)
+    public void GetVertexByDirection(CellBodyDirection bodyDirection, out Vector3 point1, out Vector3 point2)
     {
-        HexCellMetrics.GetVertexByDirection(direction, out var p1, out var p2);
+        HexCellMetrics.GetVertexByDirection(bodyDirection, out var p1, out var p2);
         point1 = p1 + positionWS;
         point2 = p2 + positionWS;
     }
 
-    public bool GetMidConnectionVerticesByDirection(HexCellDirection direction, ref Vector3 a1, ref Vector3 a2,
+    public bool GetMidConnectionVerticesByDirection(CellBodyDirection bodyDirection, ref Vector3 a1, ref Vector3 a2,
         ref Vector3 b1, ref Vector3 b2)
     {
-        var neighbor = HexCellMapManager.instance.GetCellNeighbors(this, direction);
+        var neighbor = HexCellMapManager.instance.GetCellNeighbors(this, bodyDirection);
         if (neighbor == null) return false;
-        GetVertexByDirection(direction, out a1, out a2);
-        neighbor.GetVertexByDirection(HexCellMetrics.GetInverseDirection(direction), out b1, out b2);
+        GetVertexByDirection(bodyDirection, out a1, out a2);
+        neighbor.GetVertexByDirection(HexCellMetrics.GetInverseDirection(bodyDirection), out b1, out b2);
 
         b1 = (b1 + a2);
         b2 = (b2 + a1);
         return true;
     }
 
-    public CellConnection GetConnectionByDirection(HexCellDirection direction)
+    public CellConnection GetConnectionByDirection(CellBodyDirection bodyDirection)
     {
-        if (direction == HexCellDirection.R || direction == HexCellDirection.LU || direction == HexCellDirection.UR)
+        if (bodyDirection == CellBodyDirection.R || bodyDirection == CellBodyDirection.LU || bodyDirection == CellBodyDirection.UR)
         {
-            return cellConnections.ContainsKey(direction) ? cellConnections[direction] : null;
+            return cellConnections.ContainsKey(bodyDirection) ? cellConnections[bodyDirection] : null;
         }
         else
         {
-            return HexCellMapManager.instance.GetCellNeighbors(this, direction)
-                ?.GetConnectionByDirection(HexCellMetrics.GetInverseDirection(direction));
+            return HexCellMapManager.instance.GetCellNeighbors(this, bodyDirection)
+                ?.GetConnectionByDirection(HexCellMetrics.GetInverseDirection(bodyDirection));
         }
     }
 
-    public CellGapTriangle GetCellGapTriangleByDirection(HexCellDirection direction)
+    public CellGapTriangle GetCellGapTriangleByDirection(CellBodyDirection bodyDirection)
     {
-        if (direction == HexCellDirection.UR || direction == HexCellDirection.R)
+        if (bodyDirection == CellBodyDirection.UR || bodyDirection == CellBodyDirection.R)
         {
-            return cellGapTriangles.ContainsKey(direction) ? cellGapTriangles[direction] : null;
+            return cellGapTriangles.ContainsKey(bodyDirection) ? cellGapTriangles[bodyDirection] : null;
         }
         else
         {
-            return HexCellMapManager.instance.GetCellNeighbors(this, direction)
+            return HexCellMapManager.instance.GetCellNeighbors(this, bodyDirection)
                 ?.GetCellGapTriangleByDirection(
-                    HexCellMetrics.GetNextDirection(HexCellMetrics.GetInverseDirection(direction)));
+                    HexCellMetrics.GetNextDirection(HexCellMetrics.GetInverseDirection(bodyDirection)));
         }
     }
 
