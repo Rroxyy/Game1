@@ -1,12 +1,16 @@
 using UnityEditor;
 
+
+#if UNITY_EDITOR
 public static class BuildAb_Terrain
 {
-    public static readonly string path = "Assets/AssetBundles/Terrain";
     
     [MenuItem("Tools/Build AssetBundles/Terrain/Plain")]
     public static void BuildTerrainBundle()
     {
-        BuildAssetBundles.BuildSelectedMeshesBundle(ResourceData.TerrainAbPath, nameof(TerrainType.Plain));
+        var meshes = FileHelper.GetAssetsInFolder(ResourceData.generatePainMeshPath);
+        FileHelper.ClearFolder(ResourceData.TerrainAbPath);
+        BuildAssetBundleHelper.BuildAssetBundle(ResourceData.TerrainAbPath, nameof(TerrainType.Plain),meshes);
     }
 }
+#endif

@@ -101,7 +101,7 @@ public class LOD0_PlainTerrain : ITerrainOperate
 
     public bool ContainsConnection(HexCell cell, Ray ray, out CellConnection hitConnection)
     {
-        foreach (var dir in HexCellMetrics.AllDirections)
+        foreach (var dir in CellBodyMetrics.AllDirections)
         {
             var connection = cell.GetConnectionByDirection(dir);
             if (connection != null)
@@ -130,7 +130,7 @@ public class LOD0_PlainTerrain : ITerrainOperate
 
     public bool ContainsGapTriangle(HexCell cell, Ray ray, out CellGapTriangle hitGapTriangle)
     {
-        foreach (var dir in HexCellMetrics.AllDirections)
+        foreach (var dir in CellBodyMetrics.AllDirections)
         {
             var gapTriangle = cell.GetCellGapTriangleByDirection(dir);
             if (gapTriangle != null)

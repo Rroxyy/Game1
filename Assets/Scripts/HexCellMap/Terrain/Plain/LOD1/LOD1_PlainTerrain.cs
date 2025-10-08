@@ -11,8 +11,8 @@ public class LOD1_PlainTerrain : ITerrainOperate
         {
             HexCellMeshOperate.AddTriangle(
                 positionWS,
-                HexCellMetrics.corners[i] + positionWS,
-                HexCellMetrics.corners[(i + 1) % 6] + positionWS,
+                CellBodyMetrics.corners[i] + positionWS,
+                CellBodyMetrics.corners[(i + 1) % 6] + positionWS,
                 cell.cellColor,
                 vertexBufferList
             );
@@ -25,7 +25,7 @@ public class LOD1_PlainTerrain : ITerrainOperate
     }
 
     public void AddConnectionMesh(CellConnection connection, List<HexCellVertexData> vertexBufferList,
-        List<int> indicesList,int startIndex)
+        List<int> indicesList, int startIndex)
     {
         connection.GetVertices(out var a2, out var a1, out var b2, out var b1);
         HexCellMeshOperate.AddQuad(a2, a1, b2, b1,
@@ -39,23 +39,21 @@ public class LOD1_PlainTerrain : ITerrainOperate
         }
     }
 
-    public void AddGapTriangleMesh(CellGapTriangle gapTriangle, List<HexCellVertexData> vertexBufferList, List<int> indicesList)
+    public void AddGapTriangleMesh(CellGapTriangle gapTriangle, List<HexCellVertexData> vertexBufferList,
+        List<int> indicesList)
     {
-        
-        
-            gapTriangle.GetVertices(out var a, out var b, out var c);
-            HexCellMeshOperate.AddTriangle(a, b, c,
-                gapTriangle.belongToCell.cellColor,
-                gapTriangle.preDirectionCell.cellColor,
-                gapTriangle.directionCell.cellColor,
-                vertexBufferList
-            );
+        gapTriangle.GetVertices(out var a, out var b, out var c);
+        HexCellMeshOperate.AddTriangle(a, b, c,
+            gapTriangle.belongToCell.cellColor,
+            gapTriangle.preDirectionCell.cellColor,
+            gapTriangle.directionCell.cellColor,
+            vertexBufferList
+        );
 
-            for (int i = 0; i < 3; i++)
-            {
-                indicesList.Add(indicesList.Count);
-            }
-        
+        for (int i = 0; i < 3; i++)
+        {
+            indicesList.Add(indicesList.Count);
+        }
     }
 
     public bool ContainsCell(HexCell cell, Ray ray)
@@ -106,7 +104,7 @@ public class LOD1_PlainTerrain : ITerrainOperate
 
     public bool ContainsConnection(HexCell cell, Ray ray, out CellConnection hitConnection)
     {
-        foreach (var dir in HexCellMetrics.AllDirections)
+        foreach (var dir in CellBodyMetrics.AllDirections)
         {
             var connection = cell.GetConnectionByDirection(dir);
             if (connection != null)
@@ -135,7 +133,7 @@ public class LOD1_PlainTerrain : ITerrainOperate
 
     public bool ContainsGapTriangle(HexCell cell, Ray ray, out CellGapTriangle hitGapTriangle)
     {
-        foreach (var dir in HexCellMetrics.AllDirections)
+        foreach (var dir in CellBodyMetrics.AllDirections)
         {
             var gapTriangle = cell.GetCellGapTriangleByDirection(dir);
             if (gapTriangle != null)

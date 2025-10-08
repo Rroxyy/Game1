@@ -7,12 +7,12 @@ public static class PlainBuildMethod
     public static void Plain_LOD0_CellBodyMesh(List<HexCellVertexData> vertexBufferList,
         List<int> indicesList)
     {
-        foreach (var dir in HexCellMetrics.AllDirections)
+        foreach (var dir in CellBodyMetrics.AllDirections)
         {
             HexCellMeshOperate.AddTriangleSubdivide_AllEdges(
                 Vector3.zero,
-                HexCellMetrics.GetVertexByDirection(dir),
-                HexCellMetrics.GetVertexByDirection(HexCellMetrics.GetNextDirection(dir)),
+                CellBodyMetrics.GetVertexByDirection(dir),
+                CellBodyMetrics.GetVertexByDirection(CellBodyMetrics.GetNextDirection(dir)),
                 Color.white, Color.white, Color.white,
                 4, 2,
                 vertexBufferList,
@@ -54,14 +54,48 @@ public static class PlainBuildMethod
         {
             HexCellMeshOperate.AddTriangle(
                 Vector3.zero,
-                HexCellMetrics.corners[i],
-                HexCellMetrics.corners[(i + 1) % 6],
+                CellBodyMetrics.corners[i],
+                CellBodyMetrics.corners[(i + 1) % 6],
                 Color.white,
                 vertexBufferList
             );
         }
 
         for (int i = 0; i < 18; i++)
+        {
+            indicesList.Add(indicesList.Count);
+        }
+    }
+
+    public static void Plain_LOD1_CellConnectionMesh(List<HexCellVertexData> vertexBufferList,
+        List<int> indicesList)
+    {
+        
+        HexCellMeshOperate.AddQuad(
+            CellConnectionMetrics.ConnectionCorners[0], CellConnectionMetrics.ConnectionCorners[1],
+            CellConnectionMetrics.ConnectionCorners[2], CellConnectionMetrics.ConnectionCorners[3],
+            Color.white,Color.white,
+            vertexBufferList);
+
+        for (int i = 0; i < 6; i++)
+        {
+            indicesList.Add(indicesList.Count);
+        }
+    }
+
+    public static void Plain_LOD1_CellGapTriangleMesh(List<HexCellVertexData> vertexBufferList,
+        List<int> indicesList)
+    {
+       
+        HexCellMeshOperate.AddTriangle(
+            CellGapTriangleMetrics.CellGapTriangleCorners[0],
+            CellGapTriangleMetrics.CellGapTriangleCorners[1],
+            CellGapTriangleMetrics.CellGapTriangleCorners[2],
+            Color.white,
+            vertexBufferList
+        );
+
+        for (int i = 0; i < 3; i++)
         {
             indicesList.Add(indicesList.Count);
         }

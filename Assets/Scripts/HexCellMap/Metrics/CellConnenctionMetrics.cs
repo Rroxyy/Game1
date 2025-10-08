@@ -9,11 +9,11 @@ public static class CellConnectionMetrics
     public static List<int> LOD0_P3 = new List<int>() { 16,18,23};
     
     
-    public static readonly float GapX = HexCellMetrics.outerRadius/2.0f;
+    public static readonly float GapX = CellBodyMetrics.outerRadius/2.0f;
     public static readonly float GapZ = GapX / 2 * Mathf.Sqrt(3);
 
     public static readonly float ConnectionHeight = GapX;
-    public static readonly float ConnectionWidth = HexCellMetrics.outerRadius;
+    public static readonly float ConnectionWidth = CellBodyMetrics.outerRadius;
 
     public static readonly List<CellAllDirection> connectionDirections = new List<CellAllDirection>()
     {

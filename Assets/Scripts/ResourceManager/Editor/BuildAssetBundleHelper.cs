@@ -1,19 +1,30 @@
+using System.Collections.Generic;
 using UnityEditor;
 using System.IO;
 using UnityEngine;
 
-public class BuildAssetBundles
+public class BuildAssetBundleHelper
 {
-    public static void BuildSelectedMeshesBundle(string outputPath,string bundleName)
+    public static void BuildAssetBundle(string outputPath,string bundleName)
     {
         Debug.Log("------------Build AssetBundles ---------------");
         Debug.Log("Output Path: "+outputPath+", abName: "+bundleName);
         
         Object[] selectedObjects = Selection.GetFiltered(typeof(Object), SelectionMode.Assets);
 
+        BuildAssetBundle(outputPath, bundleName, selectedObjects);
+    }
+
+    public static void BuildAssetBundle(string outputPath, string bundleName, List<Object> selectedObjects)
+    {
+        BuildAssetBundle(outputPath, bundleName, selectedObjects.ToArray());
+    }
+    
+    public static void BuildAssetBundle(string outputPath, string bundleName, Object[] selectedObjects)
+    {
         if (selectedObjects.Length == 0)
         {
-            Debug.LogWarning("⚠️ 没有选中任何资源，请在 Project 视图中选中需要打包的 Mesh 文件（如 .fbx / .obj / .asset）");
+            Debug.LogWarning("⚠️ 没有选中任何资源");
             return;
         }
 

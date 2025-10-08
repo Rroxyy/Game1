@@ -95,8 +95,8 @@ public class HexCellMapManager : MonoBehaviour
             for (x = 0; x < widthSize; x++)
             {
                 // base
-                float posX = x  * (HexCellMetrics.innerRadius * 2f)+(z & 1)*HexCellMetrics.innerRadius;
-                float posZ = z * (HexCellMetrics.outerRadius * 1.5f);
+                float posX = x  * (CellBodyMetrics.innerRadius * 2f)+(z & 1)*CellBodyMetrics.innerRadius;
+                float posZ = z * (CellBodyMetrics.outerRadius * 1.5f);
 
                 
                 //gap
@@ -155,7 +155,7 @@ public class HexCellMapManager : MonoBehaviour
     public void GetCellNeighbors(HexCell center, ref List<HexCell> neighbors, uint radius=2)
     {
         if (radius == 1) return;
-        (int cx, int cy, int cz) = HexCellMetrics.OffsetToCube(center.hexCellCoords);
+        (int cx, int cy, int cz) = CellBodyMetrics.OffsetToCube(center.hexCellCoords);
 
         for (int dx = -(int)radius; dx <= (int)radius; dx++)
         {
@@ -169,7 +169,7 @@ public class HexCellMapManager : MonoBehaviour
                 int nz = cz + dz;
 
                 // 转回 offset 坐标
-                HexCellCoords neighborCellCoords = HexCellMetrics.CubeToOffset(nx, ny, nz);
+                HexCellCoords neighborCellCoords = CellBodyMetrics.CubeToOffset(nx, ny, nz);
 
                 if (hexCellsMap.TryGetValue(neighborCellCoords, out HexCell neighbor))
                 {
@@ -183,9 +183,9 @@ public class HexCellMapManager : MonoBehaviour
     //只取周围一格
     public void GetCellNeighbors(HexCell center, ref List<HexCell> neighbors,ref List<CellBodyDirection> directions) 
     {
-        foreach (var dir in HexCellMetrics.AllDirections)
+        foreach (var dir in CellBodyMetrics.AllDirections)
         {
-            var coord=HexCellMetrics.GetHexCellNeighborCoords(center, dir);
+            var coord=CellBodyMetrics.GetHexCellNeighborCoords(center, dir);
 
             if (hexCellsMap.TryGetValue(coord, out HexCell neighbor))
             {
@@ -197,7 +197,7 @@ public class HexCellMapManager : MonoBehaviour
 
     public HexCell GetCellNeighbors(HexCell center, CellBodyDirection bodyDirection)
     {
-        var coord=HexCellMetrics.GetHexCellNeighborCoords(center, bodyDirection);
+        var coord=CellBodyMetrics.GetHexCellNeighborCoords(center, bodyDirection);
         if (hexCellsMap.TryGetValue(coord, out HexCell neighbor))
         {
             return neighbor;

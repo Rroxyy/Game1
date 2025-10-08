@@ -24,13 +24,13 @@ public class CellGapTriangle : Cell_Item
     {
         belongToCell.GetVertexByDirection(_bodyDirection, out a);
 
-        var tempDir = HexCellMetrics.GetPrevioustDirection(_bodyDirection);
-        tempDir = HexCellMetrics.GetInverseDirection(tempDir);
+        var tempDir = CellBodyMetrics.GetPrevioustDirection(_bodyDirection);
+        tempDir = CellBodyMetrics.GetInverseDirection(tempDir);
         preDirectionCell.GetVertexByDirection(tempDir, out b);
 
 
-        tempDir = HexCellMetrics.GetPrevioustDirection(tempDir);
-        tempDir = HexCellMetrics.GetInverseDirection(tempDir);
+        tempDir = CellBodyMetrics.GetPrevioustDirection(tempDir);
+        tempDir = CellBodyMetrics.GetInverseDirection(tempDir);
         directionCell.GetVertexByDirection(tempDir, out c);
     }
 

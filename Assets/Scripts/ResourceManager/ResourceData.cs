@@ -1,5 +1,7 @@
 public static class ResourceData
 {
-    public static readonly string TerrainAbPath = "Assets/AssetBundles/Terrain";
+    public const string TerrainAbPath = "Assets/AssetBundles/Terrain";
+    
+    public const string generatePainMeshPath = "Assets/Gen/TerrainMesh/PlainMeshes";
     
 }

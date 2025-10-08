@@ -122,7 +122,7 @@ public class HexCellChunk : MonoBehaviour
 
         if (dirtyNeighborCell)
         {
-            foreach (var dir in HexCellMetrics.HalfInverseDirections)
+            foreach (var dir in CellBodyMetrics.HalfInverseDirections)
             {
                 HexCellMapManager.instance.GetCellNeighbors(cell,dir)?.SetChunkDirty(false);
             }

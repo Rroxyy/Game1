@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -38,6 +39,31 @@ public static class FileHelper
         }
 
         Debug.Log($"✅ 已清空文件夹：{folderPath}");
+    }
+    
+    public static List<Object> GetAssetsInFolder(string folderPath)
+    {
+        List<Object> assets = new List<Object>();
+
+        // 查找该目录下的所有资源（t: 表示所有类型）
+        string[] guids = AssetDatabase.FindAssets("", new[] { folderPath });
+
+        foreach (string guid in guids)
+        {
+            string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+
+            // 保证只查当前文件夹（不递归）
+            string assetDir = Path.GetDirectoryName(assetPath).Replace('\\', '/');
+            if (assetDir != folderPath.TrimEnd('/'))
+                continue;
+
+            // 加载资源为 UnityEngine.Object
+            Object obj = AssetDatabase.LoadAssetAtPath<Object>(assetPath);
+            if (obj != null)
+                assets.Add(obj);
+        }
+
+        return assets;
     }
 }
 

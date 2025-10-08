@@ -84,7 +84,7 @@ public class RiverTerrainFeature_Connection : TerrainFeature
         else if (direction == CellAllDirection.Deg270)
         {
             var otherRiver= connection.OtherHexCell.terrainFeature as RiverTerrainFeature_Cell;
-            var inDir = HexCellMetrics.GetInverseDirection(connection.bodyDirection);
+            var inDir = CellBodyMetrics.GetInverseDirection(connection.bodyDirection);
             if (otherRiver != null)
             {
                 SetVertexHeight(vertexBufferList,startIndex+32,otherRiver.GetOuterRiverHeight(inDir));

@@ -34,7 +34,7 @@ public class RiverTerrainFeature_Cell : TerrainFeature
             return;
         }
         Vector3 centor = cell.positionWS;
-        foreach (var dir in HexCellMetrics.AllDirections)
+        foreach (var dir in CellBodyMetrics.AllDirections)
         {
             cell.GetVertexByDirection(dir,out var a1,out var a2);
             if (Triangle.RayInTriangle(_ray, centor, a1, a2, out var t))
@@ -46,9 +46,9 @@ public class RiverTerrainFeature_Cell : TerrainFeature
                     connection.SetTerrainFeature(TerrainFeatureType.River);
 
                     var dd = dir;
-                    if (!HexCellMetrics.HalfDirections.Contains(dd))
+                    if (!CellBodyMetrics.HalfDirections.Contains(dd))
                     {
-                        dd = HexCellMetrics.GetInverseDirection(dd);
+                        dd = CellBodyMetrics.GetInverseDirection(dd);
                     }
                     connection.terrainFeature.AddTerrainFeatureParams(connection.BelongsToHexCell,dd);
                 }
@@ -62,9 +62,9 @@ public class RiverTerrainFeature_Cell : TerrainFeature
     {
         foreach (var dir in riverDirections)
         {
-            for (int i = 0; i < HexCellMetrics.LOD0_P8.Count; i++)
+            for (int i = 0; i < CellBodyMetrics.LOD0_P8.Count; i++)
             {
-                int index=startIndex+HexCellMetrics.LOD0_P8[i]+36*(int)dir;
+                int index=startIndex+CellBodyMetrics.LOD0_P8[i]+36*(int)dir;
                 var it = vertexBufferList[index];
                 it.pos.y = GetOuterRiverHeight(dir);
                 vertexBufferList[index]=it;
@@ -72,9 +72,9 @@ public class RiverTerrainFeature_Cell : TerrainFeature
                 HexCellMeshOperate.RebuildNormal(vertexBufferList,index/3);
             }
 
-            for (int i = 0; i < HexCellMetrics.LOD0_P3.Count; i++)
+            for (int i = 0; i < CellBodyMetrics.LOD0_P3.Count; i++)
             {
-                int index=startIndex+HexCellMetrics.LOD0_P3[i]+36*(int)dir;
+                int index=startIndex+CellBodyMetrics.LOD0_P3[i]+36*(int)dir;
                 var it = vertexBufferList[index];
                 it.pos.y = GetInnerRiverHeight(dir);
 

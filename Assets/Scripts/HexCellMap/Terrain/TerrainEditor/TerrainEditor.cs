@@ -9,8 +9,11 @@ using UnityEngine.Rendering;
 
 public class TerrainEditor : MonoBehaviour
 {
-    [Header("Generate Terrain Mesh")] [SerializeField]
+    [Header("Show Terrain Mesh")] [SerializeField]
     private bool showTerrainMesh = false;
+    [SerializeField]private TerrainType terrainType;
+    [SerializeField]private LOD_Level lodLevel;
+    [SerializeField]private CellPart cellPart;
 
     [Header("Save Temp(Test)")] [SerializeField]
     private bool generateTerrainMesh = false;
@@ -24,9 +27,8 @@ public class TerrainEditor : MonoBehaviour
     private bool loadTest = false;
 
 
-    private readonly static string generateMeshPath = "Assets/Gen/TerrainMesh/PlainMeshes";
     private readonly static string tempPath = "Assets/Gen/TerrainMesh/Temp";
-
+    
 
     [Header("Base")] [Space] [SerializeField]
     private Material terrainMaterial;
@@ -58,7 +60,7 @@ public class TerrainEditor : MonoBehaviour
     {
         if (regenerateAllTerrainMesh)
         {
-            FileHelper.ClearFolder(generateMeshPath);
+            FileHelper.ClearFolder(ResourceData.generatePainMeshPath);
             regenerateAllTerrainMesh = false;
             
 
@@ -67,7 +69,7 @@ public class TerrainEditor : MonoBehaviour
                 Mesh tempMesh = new Mesh();
                 List<HexCellVertexData> vertexBufferList = new List<HexCellVertexData>();
                 List<int> indicesList = new List<int>();
-                string savePath = Path.Combine(generateMeshPath, it.Key.GetMeshAssetName());
+                string savePath = Path.Combine(ResourceData.generatePainMeshPath, it.Key.GetMeshAssetName());
                 it.Value.Invoke(vertexBufferList, indicesList);
                 UpdateTerrainMesh(tempMesh, vertexBufferList, indicesList);
                 tempMesh.name = it.Key.GetMeshName();
@@ -100,8 +102,10 @@ public class TerrainEditor : MonoBehaviour
             List<HexCellVertexData> vertexBufferList = new List<HexCellVertexData>();
             List<int> indicesList = new List<int>();
 
-
-            PlainBuildMethod.Plain_LOD1_CellBodyMesh(vertexBufferList, indicesList);
+            var generateMethod=
+                TerrainMeshFactory.
+                    buildActions[new TerrainBuildKey(terrainType, lodLevel,cellPart)] ;
+            generateMethod.Invoke(vertexBufferList, indicesList);
 
             UpdateTerrainMesh(terrainMesh,vertexBufferList, indicesList);
         }

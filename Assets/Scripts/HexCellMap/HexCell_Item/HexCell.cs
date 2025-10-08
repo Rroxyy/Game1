@@ -57,7 +57,7 @@ public class HexCell : Cell_Item
 
     public void RefreshSingleCell()
     {
-        foreach (var dir in HexCellMetrics.HalfDirections)
+        foreach (var dir in CellBodyMetrics.HalfDirections)
         {
             RefreshCTbyDir(dir);
         }
@@ -67,7 +67,7 @@ public class HexCell : Cell_Item
     {
         RefreshSingleCell();
 
-        foreach (var dir in HexCellMetrics.AllDirections)
+        foreach (var dir in CellBodyMetrics.AllDirections)
         {
             HexCellMapManager.instance.GetCellNeighbors(this, dir)
                 ?.RefreshSingleCell();
@@ -84,9 +84,9 @@ public class HexCell : Cell_Item
             cellConnections.Add(dir, connection);
         }
 
-        if (dir == HexCellMetrics.HalfDirections[0]) return;
+        if (dir == CellBodyMetrics.HalfDirections[0]) return;
 
-        var preDir = HexCellMetrics.GetPrevioustDirection(dir);
+        var preDir = CellBodyMetrics.GetPrevioustDirection(dir);
         var preNeighbor = HexCellMapManager.instance.GetCellNeighbors(this, preDir);
         if (preNeighbor == null) return;
 
@@ -116,7 +116,7 @@ public class HexCell : Cell_Item
 
     public void SetHeight(float _height)
     {
-        float temp = _height * HexCellMetrics.heightFactor;
+        float temp = _height * CellBodyMetrics.heightFactor;
         if (Mathf.Abs(positionWS.y - temp) < 1e-4) return;
         positionWS.y = temp;
         SetChunkDirty(true); //render dirty
@@ -131,7 +131,7 @@ public class HexCell : Cell_Item
     public void GetVertexByDirection(CellBodyDirection bodyDirection, out Vector3 point)
     {
        ;
-        point = HexCellMetrics.GetVertexByDirection(bodyDirection) + positionWS;
+        point = CellBodyMetrics.GetVertexByDirection(bodyDirection) + positionWS;
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public class HexCell : Cell_Item
     /// </summary>
     public void GetVertexByDirection(CellBodyDirection bodyDirection, out Vector3 point1, out Vector3 point2)
     {
-        HexCellMetrics.GetVertexByDirection(bodyDirection, out var p1, out var p2);
+        CellBodyMetrics.GetVertexByDirection(bodyDirection, out var p1, out var p2);
         point1 = p1 + positionWS;
         point2 = p2 + positionWS;
     }
@@ -150,7 +150,7 @@ public class HexCell : Cell_Item
         var neighbor = HexCellMapManager.instance.GetCellNeighbors(this, bodyDirection);
         if (neighbor == null) return false;
         GetVertexByDirection(bodyDirection, out a1, out a2);
-        neighbor.GetVertexByDirection(HexCellMetrics.GetInverseDirection(bodyDirection), out b1, out b2);
+        neighbor.GetVertexByDirection(CellBodyMetrics.GetInverseDirection(bodyDirection), out b1, out b2);
 
         b1 = (b1 + a2);
         b2 = (b2 + a1);
@@ -166,7 +166,7 @@ public class HexCell : Cell_Item
         else
         {
             return HexCellMapManager.instance.GetCellNeighbors(this, bodyDirection)
-                ?.GetConnectionByDirection(HexCellMetrics.GetInverseDirection(bodyDirection));
+                ?.GetConnectionByDirection(CellBodyMetrics.GetInverseDirection(bodyDirection));
         }
     }
 
@@ -180,13 +180,13 @@ public class HexCell : Cell_Item
         {
             return HexCellMapManager.instance.GetCellNeighbors(this, bodyDirection)
                 ?.GetCellGapTriangleByDirection(
-                    HexCellMetrics.GetNextDirection(HexCellMetrics.GetInverseDirection(bodyDirection)));
+                    CellBodyMetrics.GetNextDirection(CellBodyMetrics.GetInverseDirection(bodyDirection)));
         }
     }
 
     public Vector3 GetVertexByIndex(int index)
     {
-        return HexCellMetrics.corners[index % 6] + positionWS;
+        return CellBodyMetrics.corners[index % 6] + positionWS;
     }
 
     #endregion

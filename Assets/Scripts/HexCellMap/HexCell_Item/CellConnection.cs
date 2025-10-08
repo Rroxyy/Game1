@@ -19,7 +19,7 @@ public class CellConnection: Cell_Item
     public void GetVertices(out Vector3 a2,out Vector3 a1,  out Vector3 b2, out Vector3 b1)
     {
         BelongsToHexCell.GetVertexByDirection(bodyDirection, out  a1, out a2);
-        OtherHexCell.GetVertexByDirection(HexCellMetrics.GetInverseDirection(bodyDirection), out  b1, out b2);
+        OtherHexCell.GetVertexByDirection(CellBodyMetrics.GetInverseDirection(bodyDirection), out  b1, out b2);
        
     }
 

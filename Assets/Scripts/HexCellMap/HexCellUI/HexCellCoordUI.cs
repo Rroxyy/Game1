@@ -28,7 +28,7 @@ public class HexCellCoordUI : MonoBehaviour
         HexCellCoords id = cell.hexCellCoords;
         if (showCubeCoordinates)
         {
-            var _id = HexCellMetrics.OffsetToCube(id);
+            var _id = CellBodyMetrics.OffsetToCube(id);
             textMesh.text = _id.ToString();
         }
         else

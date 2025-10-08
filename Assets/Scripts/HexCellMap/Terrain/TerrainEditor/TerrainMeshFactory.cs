@@ -59,6 +59,18 @@ public class TerrainMeshFactory
         {
             new TerrainBuildKey(TerrainType.Plain,LOD_Level.LOD0,CellPart.CellGapTriangle),
             PlainBuildMethod.Plain_LOD0_CellGapTriangleMesh
+        },
+        {
+            new TerrainBuildKey(TerrainType.Plain,LOD_Level.LOD1,CellPart.CellBody),
+            PlainBuildMethod.Plain_LOD1_CellBodyMesh
+        },
+        {
+            new TerrainBuildKey(TerrainType.Plain,LOD_Level.LOD1,CellPart.CellConnection),
+            PlainBuildMethod.Plain_LOD1_CellConnectionMesh
+        },
+        {
+            new TerrainBuildKey(TerrainType.Plain,LOD_Level.LOD1,CellPart.CellGapTriangle),
+            PlainBuildMethod.Plain_LOD1_CellGapTriangleMesh
         }
     };
 

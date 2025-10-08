@@ -6,7 +6,7 @@ using UnityEngine;
 
 
 
-public static class HexCellMetrics
+public static class CellBodyMetrics
 {
     public static readonly float outerRadius = 0.8f;
     public static readonly float innerRadius = Mathf.Sqrt(3f) * outerRadius / 2f;

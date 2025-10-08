@@ -21,7 +21,7 @@ public class HexCellCollider
         dirty = true;
         quadtree.AABBCollider_Dirty();
         if (!setNeighborDirty) return;
-        foreach (var dir in HexCellMetrics.HalfDirections)
+        foreach (var dir in CellBodyMetrics.HalfDirections)
         {
             var neighbor = HexCellMapManager.instance.GetCellNeighbors(cell, dir);
             neighbor?.hexCellCollider.SetDirty(false);
@@ -38,13 +38,13 @@ public class HexCellCollider
         if (!dirty) return;
         aabb.Reset();
         
-        aabb.Encapsulate(HexCellMetrics.GetAABB(cell.positionWS));
+        aabb.Encapsulate(CellBodyMetrics.GetAABB(cell.positionWS));
 
-        foreach (var dir in HexCellMetrics.AllDirections)
+        foreach (var dir in CellBodyMetrics.AllDirections)
         {
             var neighbor = HexCellMapManager.instance.GetCellNeighbors(cell, dir);
             if (neighbor == null) continue;
-            neighbor.GetVertexByDirection(HexCellMetrics.GetInverseDirection(dir),out var p1, out var p2);
+            neighbor.GetVertexByDirection(CellBodyMetrics.GetInverseDirection(dir),out var p1, out var p2);
             cell.GetVertexByDirection(dir, out var a1, out var a2);
             
             aabb.Encapsulate((p2+a1)/2.0f);
